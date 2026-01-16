@@ -11,7 +11,28 @@
 
 	let showSidebar = $state(false);
 	let currentPageNumber = $state(1);
+	let hasInitialized = $state(false);
+	let lastDocumentSqid = $state('');
 
+	// Reset initialization when navigating to a different document
+	$effect(() => {
+		if (params.sqid !== lastDocumentSqid) {
+			hasInitialized = false;
+			lastDocumentSqid = params.sqid;
+		}
+	});
+
+	// Initialize page number from URL parameter only once per document
+	$effect(() => {
+		if (!hasInitialized) {
+			const pageParam = $page.url.searchParams.get('page');
+			const initialPageNumber = pageParam ? parseInt(pageParam) : 1;
+			if (initialPageNumber >= 1) {
+				currentPageNumber = initialPageNumber;
+			}
+			hasInitialized = true;
+		}
+	});
 
 	// Fetch document details
 	const documentQuery = createQuery({
@@ -28,14 +49,6 @@
         return page ? page.sqid : null;
     });
 
-	// Update currentPageNumber when URL parameter changes
-	$effect(() => {
-		const pageParam = $page.url.searchParams.get('page');
-		const newPageNumber = pageParam ? parseInt(pageParam) : 1;
-		if (newPageNumber !== currentPageNumber && newPageNumber >= 1) {
-			currentPageNumber = newPageNumber;
-		}
-	});
 
 	function nextPage() {
 		const totalPages = $documentQuery.data?.page_count || 0;

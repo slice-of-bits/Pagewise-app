@@ -38,7 +38,7 @@
     // Navigate to document page
     function handleClick() {
         if (documentSqid) {
-            goto(`/documents/${documentSqid}?page=${page.sqid}`);
+            goto(`/documents/${documentSqid}?page=${page.page_number}`);
         }
     }
 </script>

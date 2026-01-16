@@ -96,12 +96,12 @@
 		<div class="p-4 border-t border-gray-200 bg-gray-50">
 			<h4 class="text-sm font-medium text-gray-900 mb-2">Page Information</h4>
 			<div class="space-y-2 text-xs text-gray-600">
-				{#if page.confidence_score !== undefined}
-					<div>
-						<span class="font-medium">OCR Confidence:</span>
-						<span class="ml-1">{Math.round((page.confidence_score || 0) * 100)}%</span>
-					</div>
-				{/if}
+				<!--{#if page.confidence_score !== undefined}-->
+				<!--	<div>-->
+				<!--		<span class="font-medium">OCR Confidence:</span>-->
+				<!--		<span class="ml-1">{Math.round((page.confidence_score || 0) * 100)}%</span>-->
+				<!--	</div>-->
+				<!--{/if}-->
 
 				{#if page.language}
 					<div>

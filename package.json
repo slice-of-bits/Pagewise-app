@@ -49,6 +49,7 @@
   "dependencies": {
     "@hey-api/openapi-ts": "^0.90.3",
     "@tanstack/svelte-query": "^5.90.2",
+    "@types/marked": "^6.0.0",
     "lucide-svelte": "^0.562.0"
   }
 }

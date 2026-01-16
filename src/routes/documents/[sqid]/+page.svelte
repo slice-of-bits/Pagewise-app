@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { createQuery, createMutation } from '@tanstack/svelte-query';
+	import { createQuery } from '@tanstack/svelte-query';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { Download, Edit, ChevronLeft, ChevronRight } from 'lucide-svelte';
     import type { PageProps } from './$types';
-    import {documentsApiGetDocumentOptions, documentsApiGetPageOptions} from "$lib/api/@tanstack/svelte-query.gen";
+    import {documentsApiGetDocumentOptions} from "$lib/api/@tanstack/svelte-query.gen";
     import PageDetails from "$lib/components/PageDetails.svelte";
 
     let { params }: PageProps = $props();
@@ -26,6 +27,15 @@
         const page = $documentQuery.data.pages?.find(p => p.page_number === currentPageNumber);
         return page ? page.sqid : null;
     });
+
+	// Update currentPageNumber when URL parameter changes
+	$effect(() => {
+		const pageParam = $page.url.searchParams.get('page');
+		const newPageNumber = pageParam ? parseInt(pageParam) : 1;
+		if (newPageNumber !== currentPageNumber && newPageNumber >= 1) {
+			currentPageNumber = newPageNumber;
+		}
+	});
 
 	function nextPage() {
 		const totalPages = $documentQuery.data?.page_count || 0;

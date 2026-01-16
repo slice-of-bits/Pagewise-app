@@ -23,13 +23,9 @@
     });
 
     // Fetch buckets for filtering
-    const bucketsQuery = createQuery(() => ({
-        queryKey: ['buckets'],
-        queryFn: async () => {
-            const response = await bucketApiListBuckets();
-            return response.data || [];
-        }
-    }));
+    const bucketsQuery = createQuery({
+        ...bucketApiListBuckets()
+    });
 
     let searchInput = $state(searchFilter);
     let selectedBucket = $state(bucketFilter);

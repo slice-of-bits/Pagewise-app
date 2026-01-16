@@ -205,9 +205,23 @@ export type PagesListFilterSchema = {
 };
 
 /**
- * PageSchema2
+ * PagedPageSchema
  */
-export type PageSchema2 = {
+export type PagedPageSchema = {
+    /**
+     * Items
+     */
+    items: Array<PageSchema>;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
+ * PageDetailsSchema
+ */
+export type PageDetailsSchema = {
     /**
      * Sqid
      */
@@ -246,20 +260,6 @@ export type PageSchema2 = {
      * Updated At
      */
     updated_at: string;
-};
-
-/**
- * PagedPageSchema2
- */
-export type PagedPageSchema2 = {
-    /**
-     * Items
-     */
-    items: Array<PageSchema2>;
-    /**
-     * Count
-     */
-    count: number;
 };
 
 /**
@@ -315,67 +315,99 @@ export type ImageSchema = {
 };
 
 /**
- * SearchResultSchema
+ * SearchFilterSchema
  */
-export type SearchResultSchema = {
+export type SearchFilterSchema = {
+    /**
+     * Q
+     */
+    q?: string | null;
+    /**
+     * Min Score
+     */
+    min_score?: number | null;
+    /**
+     * Document Title
+     */
+    document_title?: string | null;
+    /**
+     * Bucket Name
+     */
+    bucket_name?: string | null;
+};
+
+/**
+ * SearchDocumentSchema
+ */
+export type SearchDocumentSchema = {
     /**
      * Sqid
      */
     sqid: string;
     /**
-     * Document Title
+     * Title
      */
-    document_title: string;
+    title: string;
     /**
-     * Document Sqid
+     * Thumbnail
      */
-    document_sqid: string;
+    thumbnail?: string | null;
     /**
-     * Bucket Name
+     * Pages
      */
-    bucket_name: string;
+    pages: Array<SearchPageSchema>;
     /**
-     * Bucket Sqid
+     * Max Relevance Score
      */
-    bucket_sqid: string;
+    max_relevance_score: number;
+};
+
+/**
+ * SearchPageSchema
+ */
+export type SearchPageSchema = {
+    /**
+     * Snippet
+     */
+    snippet?: string | null;
+    /**
+     * Relevance Score
+     */
+    relevance_score?: number | null;
+    /**
+     * Sqid
+     */
+    sqid: string;
     /**
      * Page Number
      */
     page_number: number;
     /**
-     * Snippet
+     * Text Markdown Clean
      */
-    snippet: string;
+    text_markdown_clean?: string | null;
     /**
-     * Relevance Score
+     * Processing Status
      */
-    relevance_score?: number | null;
+    processing_status?: string;
+    /**
+     * Created At
+     */
+    created_at: string;
 };
 
 /**
- * SearchQuerySchema
+ * SearchResultSchema
  */
-export type SearchQuerySchema = {
+export type SearchResultSchema = {
     /**
-     * Q
+     * Documents
      */
-    q: string;
+    documents: Array<SearchDocumentSchema>;
     /**
-     * Bucket Sqid
+     * Total Results
      */
-    bucket_sqid?: string | null;
-    /**
-     * Document Sqid
-     */
-    document_sqid?: string | null;
-    /**
-     * Limit
-     */
-    limit?: number;
-    /**
-     * Offset
-     */
-    offset?: number;
+    total_results: number;
 };
 
 /**
@@ -760,7 +792,7 @@ export type DocumentsApiListPagesResponses = {
     /**
      * OK
      */
-    200: PagedPageSchema2;
+    200: PagedPageSchema;
 };
 
 export type DocumentsApiListPagesResponse = DocumentsApiListPagesResponses[keyof DocumentsApiListPagesResponses];
@@ -781,7 +813,7 @@ export type DocumentsApiGetPageResponses = {
     /**
      * OK
      */
-    200: PageSchema2;
+    200: PageDetailsSchema;
 };
 
 export type DocumentsApiGetPageResponse = DocumentsApiGetPageResponses[keyof DocumentsApiGetPageResponses];
@@ -802,7 +834,7 @@ export type DocumentsApiUpdatePageResponses = {
     /**
      * OK
      */
-    200: PageSchema2;
+    200: PageSchema;
 };
 
 export type DocumentsApiUpdatePageResponse = DocumentsApiUpdatePageResponses[keyof DocumentsApiUpdatePageResponses];
@@ -852,19 +884,34 @@ export type DocumentsApiGetImageResponses = {
 export type DocumentsApiGetImageResponse = DocumentsApiGetImageResponses[keyof DocumentsApiGetImageResponses];
 
 export type DocumentsApiSearchPagesData = {
-    body: SearchQuerySchema;
+    body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Q
+         */
+        q?: string | null;
+        /**
+         * Min Score
+         */
+        min_score?: number | null;
+        /**
+         * Document Title
+         */
+        document_title?: string | null;
+        /**
+         * Bucket Name
+         */
+        bucket_name?: string | null;
+    };
     url: '/api/search/';
 };
 
 export type DocumentsApiSearchPagesResponses = {
     /**
-     * Response
-     *
      * OK
      */
-    200: Array<SearchResultSchema>;
+    200: SearchResultSchema;
 };
 
 export type DocumentsApiSearchPagesResponse = DocumentsApiSearchPagesResponses[keyof DocumentsApiSearchPagesResponses];

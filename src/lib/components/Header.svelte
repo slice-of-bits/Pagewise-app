@@ -1,24 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { Search, Menu, FileText, Plus } from 'lucide-svelte';
+	import { Menu, FileText, Plus } from 'lucide-svelte';
+	import SearchDropdown from './SearchDropdown.svelte';
 
-	let searchQuery = $state('');
 	let showMobileMenu = $state(false);
-
-	function handleSearch(event: Event) {
-		event.preventDefault();
-		if (searchQuery.trim()) {
-			goto(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-		}
-	}
-
-	function handleQuickSearch(event: KeyboardEvent) {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			goto(`/search?q=${encodeURIComponent(searchQuery.trim())}&preview=true`);
-		}
-	}
 </script>
 
 <header class="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
@@ -62,28 +48,7 @@
 
 			<!-- Search Bar -->
 			<div class="flex-1 max-w-2xl mx-8 hidden md:block">
-				<form onsubmit={handleSearch} class="relative">
-					<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-						<Search class="h-5 w-5 text-gray-400" />
-					</div>
-					<input
-						type="text"
-						bind:value={searchQuery}
-						onkeydown={handleQuickSearch}
-						placeholder="Search documents and pages... (Press Enter for quick preview)"
-						class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-					/>
-					{#if searchQuery.trim()}
-						<div class="absolute right-2 top-1/2 -translate-y-1/2">
-							<button
-								type="submit"
-								class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-							>
-								Search
-							</button>
-						</div>
-					{/if}
-				</form>
+				<SearchDropdown placeholder="Search documents and pages..." />
 			</div>
 
 			<!-- Action Buttons -->
@@ -111,19 +76,7 @@
 			<div class="border-t border-gray-200 pb-3 pt-4 md:hidden">
 				<!-- Mobile Search -->
 				<div class="px-2 pb-4">
-					<form onsubmit={handleSearch}>
-						<div class="relative">
-							<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-								<Search class="h-5 w-5 text-gray-400" />
-							</div>
-							<input
-								type="text"
-								bind:value={searchQuery}
-								placeholder="Search documents and pages..."
-								class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-							/>
-						</div>
-					</form>
+					<SearchDropdown placeholder="Search documents and pages..." />
 				</div>
 
 				<!-- Mobile Navigation Links -->

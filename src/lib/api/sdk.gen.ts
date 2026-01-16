@@ -188,16 +188,9 @@ export const documentsApiGetImage = <ThrowOnError extends boolean = false>(optio
 /**
  * Search Pages
  *
- * Search pages with full-text search
+ * Search pages using PostgreSQL text matching and similarity
  */
-export const documentsApiSearchPages = <ThrowOnError extends boolean = false>(options: Options<DocumentsApiSearchPagesData, ThrowOnError>) => (options.client ?? client).post<DocumentsApiSearchPagesResponses, unknown, ThrowOnError>({
-    url: '/api/search/',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
+export const documentsApiSearchPages = <ThrowOnError extends boolean = false>(options?: Options<DocumentsApiSearchPagesData, ThrowOnError>) => (options?.client ?? client).get<DocumentsApiSearchPagesResponses, unknown, ThrowOnError>({ url: '/api/search/', ...options });
 
 /**
  * Get Docling Settings

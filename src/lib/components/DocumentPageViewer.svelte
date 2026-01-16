@@ -1,6 +1,4 @@
 <script lang="ts">
-    import {PDFViewer} from 'sv-pdf';
-
     let {page} = $props();
 </script>
 
@@ -36,12 +34,12 @@
             <div class="mt-6 bg-white rounded-lg p-4 border border-gray-200">
                 <h4 class="text-sm font-medium text-gray-900 mb-3">Page Information</h4>
                 <div class="grid grid-cols-2 gap-4 text-sm">
-                    {#if page.confidence_score !== undefined}
-                        <div>
-                            <span class="text-gray-500">OCR Confidence:</span>
-                            <span class="ml-2 font-medium">{Math.round((page.confidence_score || 0) * 100)}%</span>
-                        </div>
-                    {/if}
+                    <!--{#if page.confidence_score !== undefined}-->
+                    <!--    <div>-->
+                    <!--        <span class="text-gray-500">OCR Confidence:</span>-->
+                    <!--        <span class="ml-2 font-medium">{Math.round((page.confidence_score || 0) * 100)}%</span>-->
+                    <!--    </div>-->
+                    <!--{/if}-->
 
                     {#if page.language}
                         <div>

@@ -476,24 +476,25 @@ export const documentsApiGetImageOptions = (options: Options<DocumentsApiGetImag
     queryKey: documentsApiGetImageQueryKey(options)
 });
 
+export const documentsApiSearchPagesQueryKey = (options?: Options<DocumentsApiSearchPagesData>) => createQueryKey('documentsApiSearchPages', options);
+
 /**
  * Search Pages
  *
- * Search pages with full-text search
+ * Search pages using PostgreSQL text matching and similarity
  */
-export const documentsApiSearchPagesMutation = (options?: Partial<Options<DocumentsApiSearchPagesData>>): MutationOptions<DocumentsApiSearchPagesResponse, DefaultError, Options<DocumentsApiSearchPagesData>> => {
-    const mutationOptions: MutationOptions<DocumentsApiSearchPagesResponse, DefaultError, Options<DocumentsApiSearchPagesData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await documentsApiSearchPages({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
+export const documentsApiSearchPagesOptions = (options?: Options<DocumentsApiSearchPagesData>) => queryOptions<DocumentsApiSearchPagesResponse, DefaultError, DocumentsApiSearchPagesResponse, ReturnType<typeof documentsApiSearchPagesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await documentsApiSearchPages({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: documentsApiSearchPagesQueryKey(options)
+});
 
 export const documentsApiGetDoclingSettingsQueryKey = (options?: Options<DocumentsApiGetDoclingSettingsData>) => createQueryKey('documentsApiGetDoclingSettings', options);
 

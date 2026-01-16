@@ -2,6 +2,9 @@
 
 This is the frontend application for the Pagewise document management system built with SvelteKit.
 
+## Know problems
+https://www.npmjs.com/package/marked#usage
+
 ## Features
 
 - **Document Management**: Upload, view, and organize PDF documents

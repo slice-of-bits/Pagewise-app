@@ -104,11 +104,11 @@
 								<span class="text-sm font-medium text-gray-900">
 									Page {result.page_number}
 								</span>
-								{#if result.confidence_score}
-									<span class="text-xs text-gray-500">
-										{Math.round(result.confidence_score * 100)}% match
-									</span>
-								{/if}
+								<!--{#if result.confidence_score}-->
+								<!--	<span class="text-xs text-gray-500">-->
+								<!--		{Math.round(result.confidence_score * 100)}% match-->
+								<!--	</span>-->
+								<!--{/if}-->
 							</div>
 							{#if result.matched_text}
 								<div class="text-xs text-gray-600 mt-1 line-clamp-2">

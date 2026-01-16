@@ -1,0 +1,15 @@
+to install the necessary packages, run:
+- pnpm add {the package name}
+
+To use tanstackquery to get data use the generated code from heyapi like this:
+```
+import { useQuery } from '@tanstack/react-query';
+import {documentsApiGetDocumentOptions} from "$lib/api/@tanstack/svelte-query.gen";
+
+const documentQuery = createQuery(() => ({
+       ...documentsApiGetDocumentOptions({
+           path: {
+               sqid: params.sqid
+           }
+       })
+    }));

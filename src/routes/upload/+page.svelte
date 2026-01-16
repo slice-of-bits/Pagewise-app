@@ -2,8 +2,7 @@
 	import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { goto } from '$app/navigation';
 	import { Upload, FileText, FolderPlus, X, Check, AlertCircle } from 'lucide-svelte';
-	import { bucketApiListBuckets, bucketApiCreateBucket, documentsApiUploadDocument } from '$lib/api/sdk.gen';
-	import { progressService } from '$lib/api/services/progressService';
+	import { bucketApiListBuckets, bucketApiCreateBucket } from '$lib/api/sdk.gen';
 	import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES, API_BASE_URL } from '$lib/api/index';
 
 	let files: FileList | null = $state(null);

@@ -1,58 +1,98 @@
 <script lang="ts">
 	import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { goto } from '$app/navigation';
-	import { Upload, FileText, FolderPlus, X, Check, AlertCircle } from 'lucide-svelte';
-	import { bucketApiListBuckets, bucketApiCreateBucket } from '$lib/api/sdk.gen';
-	import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES, API_BASE_URL } from '$lib/api/index';
+	import { Upload, FileText, FolderPlus, X, Check, AlertCircle, Settings, Plus } from 'lucide-svelte';
+	import {
+		pondsApiListPondsOptions,
+        pondsApiCreatePondMutation,
+		doclingPresetsApiListDoclingPresetsOptions,
+		doclingPresetsApiCreateDoclingPresetMutation,
+		ocrPresetsApiListOcrPresetsOptions,
+		ocrPresetsApiCreateOcrPresetMutation
+	} from '$lib/api/@tanstack/svelte-query.gen';
+	import { PUBLIC_MAX_FILE_SIZE_MB, PUBLIC_API_HOST } from '$env/static/public';
+	import type { DoclingPresetCreateSchema, OcrPresetCreateSchema } from '$lib/api';
+	import DoclingPresetForm from '$lib/components/DoclingPresetForm.svelte';
+	import OcrPresetForm from '$lib/components/OcrPresetForm.svelte';
 
 	let files: FileList | null = $state(null);
 	let title = $state('');
-	let selectedBucket = $state('');
-	let createNewBucket = $state(false);
-	let newBucketName = $state('');
-	let newBucketDescription = $state('');
+	let selectedGroup = $state('');
+	let selectedPreset = $state('');
+	let selectedOcrPreset = $state('');
+	let createNewPreset = $state(false);
+	let createNewOcrPreset = $state(false);
+	let createNewGroup = $state(false);
+	let newGroupName = $state('');
+	let newGroupDescription = $state('');
 	let dragOver = $state(false);
-	let uploadProgress = $state(0);
 	let isUploading = $state(false);
+
+	// Convert MB to bytes
+	const MAX_FILE_SIZE_MB = parseInt(PUBLIC_MAX_FILE_SIZE_MB);
+	const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 	const queryClient = useQueryClient();
 
-	// Fetch buckets
-	const bucketsQuery = createQuery(() => ({
-		queryKey: ['buckets'],
-		queryFn: async () => {
-			const response = await bucketApiListBuckets();
-			return response.data || [];
-		}
-	}));
+	// Fetch groups
+	const groupsQuery = createQuery({
+		...pondsApiListPondsOptions()
+	});
 
-	// Create bucket mutation
-	const createBucketMutation = createMutation(() => ({
-		mutationFn: async ({ name, description }: { name: string; description?: string }) => {
-			const response = await bucketApiCreateBucket({
-				body: { name, description }
-			});
-			return response.data;
-		},
+	// Fetch Docling presets
+	const presetsQuery = createQuery({
+		...doclingPresetsApiListDoclingPresetsOptions()
+	});
+
+	// Fetch OCR presets
+	const ocrPresetsQuery = createQuery({
+		...ocrPresetsApiListOcrPresetsOptions()
+	});
+
+	// Create group mutation
+	const createGroupMutation = createMutation({
+		...pondsApiCreatePondMutation(),
 		onSuccess: (data: any) => {
-			queryClient.invalidateQueries({ queryKey: ['buckets'] });
-			selectedBucket = data.sqid;
-			createNewBucket = false;
-			newBucketName = '';
-			newBucketDescription = '';
+			queryClient.invalidateQueries({ queryKey: ['groups'] });
+			selectedGroup = data.sqid;
+			createNewGroup = false;
+			newGroupName = '';
+			newGroupDescription = '';
 		}
-	}));
+	});
+
+	// Create preset mutation
+	const createPresetMutation = createMutation({
+		...doclingPresetsApiCreateDoclingPresetMutation(),
+		onSuccess: (data: any) => {
+			queryClient.invalidateQueries({ queryKey: ['doclingPresetsApiListDoclingPresets'] });
+			selectedPreset = data.sqid;
+			createNewPreset = false;
+		}
+	});
+
+	// Create OCR preset mutation
+	const createOcrPresetMutation = createMutation({
+		...ocrPresetsApiCreateOcrPresetMutation(),
+		onSuccess: (data: any) => {
+			queryClient.invalidateQueries({ queryKey: ['ocrPresetsApiListOcrPresets'] });
+			selectedOcrPreset = data.sqid;
+			createNewOcrPreset = false;
+		}
+	});
 
 	// Upload mutation
-	const uploadMutation = createMutation(() => ({
-		mutationFn: async ({ file, title, bucketSqid }: { file: File; title: string; bucketSqid?: string }) => {
+	const uploadMutation = createMutation({
+		mutationFn: async ({ file, title, groupSqid, presetSqid, ocrPresetSqid }: { file: File; title: string; groupSqid?: string; presetSqid?: string; ocrPresetSqid?: string }) => {
 			const formData = new FormData();
 			formData.append('file', file);
 			formData.append('title', title);
-			if (bucketSqid) formData.append('group_sqid', bucketSqid);
+			if (groupSqid) formData.append('pond_sqid', groupSqid);
+			if (presetSqid) formData.append('docling_preset_sqid', presetSqid);
+			if (ocrPresetSqid) formData.append('ocr_preset_sqid', ocrPresetSqid);
 
 			// Use fetch with full API URL for file upload
-			const response = await fetch(`${API_BASE_URL}/api/documents/upload/`, {
+			const response = await fetch(`${PUBLIC_API_HOST}/api/documents/upload/`, {
 				method: 'POST',
 				body: formData
 			});
@@ -63,16 +103,11 @@
 
 			return response.json();
 		},
-		onSuccess: (data) => {
-			// Track the processing task
-			if (data.task_id) {
-				progressService.trackTask(data.task_id);
-			}
-
+		onSuccess: (data: any) => {
 			queryClient.invalidateQueries({ queryKey: ['documents'] });
 			goto(`/documents/${data.sqid}`);
 		}
-	}));
+	});
 
 	function handleFileSelect(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -109,8 +144,9 @@
 				const file = droppedFiles[0];
 
 				// Check file size
-				if (file.size > MAX_FILE_SIZE_BYTES) {
-					alert(`File size (${(file.size / 1024 / 1024).toFixed(1)}MB) exceeds the maximum allowed size of ${MAX_FILE_SIZE_MB}MB`);
+				const maxBytes = parseInt(PUBLIC_MAX_FILE_SIZE_MB) * 1024 * 1024;
+				if (file.size > maxBytes) {
+					alert(`File size (${(file.size / 1024 / 1024).toFixed(1)}MB) exceeds the maximum allowed size of ${PUBLIC_MAX_FILE_SIZE_MB}MB`);
 					return;
 				}
 
@@ -135,28 +171,48 @@
 		dragOver = false;
 	}
 
-	async function handleCreateBucket() {
-		if (!newBucketName.trim()) return;
+	async function handleCreateGroup() {
+		if (!newGroupName.trim()) return;
 
 		try {
-			await createBucketMutation.mutateAsync({
-				name: newBucketName.trim(),
-				description: newBucketDescription.trim() || undefined
+			await $createGroupMutation.mutateAsync({
+				body: {
+					name: newGroupName.trim(),
+					description: newGroupDescription.trim() || undefined
+				}
 			});
 		} catch (error) {
-			console.error('Failed to create bucket:', error);
+			console.error('Failed to create group:', error);
+		}
+	}
+
+	async function handleCreatePreset(data: DoclingPresetCreateSchema) {
+		try {
+			await $createPresetMutation.mutateAsync({ body: data });
+		} catch (error) {
+			console.error('Failed to create preset:', error);
+		}
+	}
+
+	async function handleCreateOcrPreset(data: OcrPresetCreateSchema) {
+		try {
+			await $createOcrPresetMutation.mutateAsync({ body: data });
+		} catch (error) {
+			console.error('Failed to create OCR preset:', error);
 		}
 	}
 
 	async function handleUpload() {
-		if (!files || files.length === 0 || !title.trim()) return;
+		if (!selectedFile || !title.trim()) return;
 
 		try {
 			isUploading = true;
-			await uploadMutation.mutateAsync({
-				file: files[0],
+			await $uploadMutation.mutateAsync({
+				file: selectedFile,
 				title: title.trim(),
-				bucketSqid: selectedBucket || undefined
+				groupSqid: selectedGroup || undefined,
+				presetSqid: selectedPreset || undefined,
+				ocrPresetSqid: selectedOcrPreset || undefined
 			});
 		} catch (error) {
 			console.error('Upload failed:', error);
@@ -169,8 +225,16 @@
 		title = '';
 	}
 
-	let canUpload = $derived(files && files.length > 0 && title.trim() && !isUploading);
-	let selectedFile = $derived(files && files.length > 0 ? files[0] : null);
+	let groups = $derived($groupsQuery.data || []);
+	let presets = $derived($presetsQuery.data?.items || []);
+	let ocrPresets = $derived($ocrPresetsQuery.data || []);
+	let selectedFile: File | null = $derived.by(() => {
+		if (files !== null && files.length > 0) {
+			return files[0];
+		}
+		return null;
+	});
+	let canUpload = $derived(selectedFile !== null && title.trim() !== '' && !isUploading);
 </script>
 
 <svelte:head>
@@ -200,13 +264,15 @@
 						ondrop={handleDrop}
 						ondragover={handleDragOver}
 						ondragleave={handleDragLeave}
+						role="button"
+						tabindex="0"
 					>
 								<Upload class="mx-auto h-12 w-12 text-gray-400" />
 								<p class="mt-4 text-lg font-medium text-gray-900">
 									Drop your PDF here, or click to select
 								</p>
 								<p class="mt-2 text-sm text-gray-600">
-									PDF files only, up to {MAX_FILE_SIZE_MB}MB ({(MAX_FILE_SIZE_MB / 1024).toFixed(1)}GB)
+									PDF files only, up to {(MAX_FILE_SIZE_MB / 1024).toFixed(1)}GB
 								</p>
 
 						<input
@@ -220,12 +286,12 @@
 					<div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
 						<div class="flex items-center space-x-3">
 							<FileText class="h-8 w-8 text-red-600" />
-									<div>
-										<p class="font-medium text-gray-900">{selectedFile?.name}</p>
-										<p class="text-sm text-gray-600">
-											{selectedFile ? (selectedFile.size / 1024 / 1024).toFixed(1) : '0'} MB
-										</p>
-									</div>
+							<div>
+								<p class="font-medium text-gray-900">{selectedFile?.name}</p>
+								<p class="text-sm text-gray-600">
+									{selectedFile ? (selectedFile.size / 1024 / 1024).toFixed(1) : '0'} MB
+								</p>
+							</div>
 						</div>
 
 						<button
@@ -258,29 +324,29 @@
 						/>
 					</div>
 
-					<!-- Bucket Selection -->
+					<!-- Group Selection -->
 					<div>
-						<label for="bucket" class="block text-sm font-medium text-gray-700 mb-1">
-							Bucket (optional)
+						<label for="group" class="block text-sm font-medium text-gray-700 mb-1">
+							Group (optional)
 						</label>
 
-						{#if !createNewBucket}
+						{#if !createNewGroup}
 							<div class="flex space-x-2">
 								<select
-									id="bucket"
-									bind:value={selectedBucket}
+									id="group"
+									bind:value={selectedGroup}
 									class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 								>
-									<option value="">Select a bucket...</option>
-									{#each (bucketsQuery.data as any[]) || [] as bucket (bucket.sqid)}
-										<option value={bucket.sqid}>{bucket.name}</option>
+									<option value="">Select a group...</option>
+									{#each groups as group (group.sqid)}
+										<option value={group.sqid}>{group.name}</option>
 									{/each}
 								</select>
 
 								<button
-									onclick={() => createNewBucket = true}
+									onclick={() => createNewGroup = true}
 									class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center space-x-2"
-									title="Create new bucket"
+									title="Create new group"
 								>
 									<FolderPlus class="h-4 w-4" />
 								</button>
@@ -288,12 +354,12 @@
 						{:else}
 							<div class="space-y-3 p-4 border border-gray-200 rounded-md bg-gray-50">
 								<div class="flex items-center justify-between">
-									<span class="text-sm font-medium text-gray-700">Create New Bucket</span>
+									<span class="text-sm font-medium text-gray-700">Create New Group</span>
 									<button
 										onclick={() => {
-											createNewBucket = false;
-											newBucketName = '';
-											newBucketDescription = '';
+											createNewGroup = false;
+											newGroupName = '';
+											newGroupDescription = '';
 										}}
 										class="text-gray-400 hover:text-gray-600"
 									>
@@ -303,29 +369,161 @@
 
 								<input
 									type="text"
-									bind:value={newBucketName}
-									placeholder="Bucket name"
+									bind:value={newGroupName}
+									placeholder="Group name"
 									class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
 								/>
 
 								<textarea
-									bind:value={newBucketDescription}
+									bind:value={newGroupDescription}
 									placeholder="Description (optional)"
 									rows="2"
 									class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
 								></textarea>
 
 								<button
-									onclick={handleCreateBucket}
-									disabled={!newBucketName.trim() || createBucketMutation.isPending}
+									onclick={handleCreateGroup}
+									disabled={!newGroupName.trim() || $createGroupMutation.isPending}
 									class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
 								>
-									{#if createBucketMutation.isPending}
+									{#if $createGroupMutation.isPending}
 										Creating...
 									{:else}
-										Create Bucket
+										Create Group
 									{/if}
 								</button>
+							</div>
+						{/if}
+					</div>
+
+					<!-- Docling Preset Selection -->
+					<div>
+						<label for="preset" class="block text-sm font-medium text-gray-700 mb-1">
+							Docling Preset (optional)
+						</label>
+
+						{#if !createNewPreset}
+							<div class="flex space-x-2">
+								<select
+									id="preset"
+									bind:value={selectedPreset}
+									class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+								>
+									<option value="">Use default preset...</option>
+									{#each presets as preset (preset.sqid)}
+										<option value={preset.sqid}>
+											{preset.name}{preset.is_default ? ' (Default)' : ''}
+										</option>
+									{/each}
+								</select>
+
+								<button
+									onclick={() => createNewPreset = true}
+									class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center space-x-2"
+									title="Create new preset"
+								>
+									<Plus class="h-4 w-4" />
+								</button>
+
+								<a
+									href="/system/settings/docling-presets"
+									class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center space-x-2"
+									title="Manage presets"
+								>
+									<Settings class="h-4 w-4" />
+								</a>
+							</div>
+							<p class="mt-1 text-sm text-gray-500">
+								Choose a preset to configure OCR and processing options. <a href="/system/settings/docling-presets" class="text-blue-600 hover:text-blue-700">Manage presets</a>
+							</p>
+						{:else}
+							<div class="space-y-3 p-4 border border-gray-200 rounded-md bg-gray-50">
+								<div class="flex items-center justify-between">
+									<span class="text-sm font-medium text-gray-700">Create New Preset</span>
+									<button
+										onclick={() => createNewPreset = false}
+										class="text-gray-400 hover:text-gray-600"
+									>
+										<X class="h-4 w-4" />
+									</button>
+								</div>
+
+								<div class="text-sm text-gray-600 mb-4">
+									Create a reusable preset with your preferred OCR and processing settings.
+								</div>
+
+								<DoclingPresetForm
+									onSubmit={handleCreatePreset}
+									onCancel={() => createNewPreset = false}
+									isSubmitting={$createPresetMutation.isPending}
+									submitLabel="Create & Use Preset"
+								/>
+							</div>
+						{/if}
+					</div>
+
+					<!-- OCRmyPDF Preset Selection -->
+					<div>
+						<label for="ocrpreset" class="block text-sm font-medium text-gray-700 mb-1">
+							OCRmyPDF Preset (optional)
+						</label>
+
+						{#if !createNewOcrPreset}
+							<div class="flex space-x-2">
+								<select
+									id="ocrpreset"
+									bind:value={selectedOcrPreset}
+									class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+								>
+									<option value="">Use default preset...</option>
+									{#each ocrPresets as preset (preset.sqid)}
+										<option value={preset.sqid}>
+											{preset.name}{preset.is_default ? ' (Default)' : ''}
+										</option>
+									{/each}
+								</select>
+
+								<button
+									onclick={() => createNewOcrPreset = true}
+									class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center space-x-2"
+									title="Create new OCR preset"
+								>
+									<Plus class="h-4 w-4" />
+								</button>
+
+								<a
+									href="/system/settings/ocr-presets"
+									class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center space-x-2"
+									title="Manage OCR presets"
+								>
+									<Settings class="h-4 w-4" />
+								</a>
+							</div>
+							<p class="mt-1 text-sm text-gray-500">
+								Choose an OCRmyPDF preset to configure OCR behavior and image processing. <a href="/system/settings/ocr-presets" class="text-blue-600 hover:text-blue-700">Manage OCR presets</a>
+							</p>
+						{:else}
+							<div class="space-y-3 p-4 border border-gray-200 rounded-md bg-gray-50">
+								<div class="flex items-center justify-between">
+									<span class="text-sm font-medium text-gray-700">Create New OCR Preset</span>
+									<button
+										onclick={() => createNewOcrPreset = false}
+										class="text-gray-400 hover:text-gray-600"
+									>
+										<X class="h-4 w-4" />
+									</button>
+								</div>
+
+								<div class="text-sm text-gray-600 mb-4">
+									Create a reusable OCRmyPDF preset with your preferred settings.
+								</div>
+
+								<OcrPresetForm
+									onSubmit={handleCreateOcrPreset}
+									onCancel={() => createNewOcrPreset = false}
+									isSubmitting={$createOcrPresetMutation.isPending}
+									submitLabel="Create & Use OCR Preset"
+								/>
 							</div>
 						{/if}
 					</div>
@@ -404,14 +602,14 @@
 	</div>
 </div>
 
-{#if uploadMutation.error}
+{#if $uploadMutation.error}
 	<div class="fixed bottom-4 right-4 bg-red-50 border border-red-200 rounded-lg p-4 shadow-lg">
 		<div class="flex items-start space-x-3">
 			<AlertCircle class="h-5 w-5 text-red-600 flex-shrink-0" />
 			<div>
 				<p class="font-medium text-red-900">Upload Failed</p>
 				<p class="text-sm text-red-700 mt-1">
-					{uploadMutation.error.message || 'An error occurred during upload'}
+					{$uploadMutation.error.message || 'An error occurred during upload'}
 				</p>
 			</div>
 		</div>

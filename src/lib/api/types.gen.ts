@@ -5,9 +5,9 @@ export type ClientOptions = {
 };
 
 /**
- * BucketSchema
+ * PondSchema
  */
-export type BucketSchema = {
+export type PondSchema = {
     /**
      * Sqid
      */
@@ -31,9 +31,9 @@ export type BucketSchema = {
 };
 
 /**
- * BucketCreateSchema
+ * PondCreateSchema
  */
-export type BucketCreateSchema = {
+export type PondCreateSchema = {
     /**
      * Name
      */
@@ -45,13 +45,79 @@ export type BucketCreateSchema = {
 };
 
 /**
- * BucketUpdateSchema
+ * PondUpdateSchema
  */
-export type BucketUpdateSchema = {
+export type PondUpdateSchema = {
     /**
      * Name
      */
     name?: string | null;
+    /**
+     * Description
+     */
+    description?: string | null;
+};
+
+/**
+ * PondShareSchema
+ */
+export type PondShareSchema = {
+    /**
+     * Sqid
+     */
+    sqid: string;
+    /**
+     * Pond Sqid
+     */
+    pond_sqid: string;
+    /**
+     * Expire Date
+     */
+    expire_date: string;
+    /**
+     * Access Count
+     */
+    access_count: number;
+    /**
+     * Is Expired
+     */
+    is_expired: boolean;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * PondShareCreateSchema
+ */
+export type PondShareCreateSchema = {
+    /**
+     * Pond Sqid
+     */
+    pond_sqid: string;
+    /**
+     * Expire Date
+     *
+     * Expiration date for the share link
+     */
+    expire_date: string;
+};
+
+/**
+ * PublicPondSchema
+ *
+ * Schema for publicly shared pond data
+ */
+export type PublicPondSchema = {
+    /**
+     * Sqid
+     */
+    sqid: string;
+    /**
+     * Name
+     */
+    name: string;
     /**
      * Description
      */
@@ -167,9 +233,17 @@ export type DocumentCreateSchema = {
      */
     title: string;
     /**
-     * Group Sqid
+     * Pond Sqid
      */
-    group_sqid: string;
+    pond_sqid: string;
+    /**
+     * Docling Preset Sqid
+     */
+    docling_preset_sqid?: string | null;
+    /**
+     * Ocr Preset Sqid
+     */
+    ocr_preset_sqid?: string | null;
     /**
      * Metadata
      */
@@ -186,6 +260,14 @@ export type DocumentUpdateSchema = {
      * Title
      */
     title?: string | null;
+    /**
+     * Docling Preset Sqid
+     */
+    docling_preset_sqid?: string | null;
+    /**
+     * Ocr Preset Sqid
+     */
+    ocr_preset_sqid?: string | null;
     /**
      * Metadata
      */
@@ -235,9 +317,31 @@ export type PageDetailsSchema = {
      */
     page_pdf: string;
     /**
+     * Page Image
+     *
+     * Preview image of the page
+     */
+    page_image?: string | null;
+    /**
      * Ocr Markdown Raw
      */
     ocr_markdown_raw?: string | null;
+    /**
+     * Docling Json
+     *
+     * Original docling JSON output
+     */
+    docling_json?: {
+        [key: string]: unknown;
+    } | null;
+    /**
+     * Docling Json Override
+     *
+     * Corrected/overridden docling JSON data
+     */
+    docling_json_override?: {
+        [key: string]: unknown;
+    } | null;
     /**
      * Text Markdown Clean
      */
@@ -331,9 +435,9 @@ export type SearchFilterSchema = {
      */
     document_title?: string | null;
     /**
-     * Bucket Name
+     * Pond Name
      */
-    bucket_name?: string | null;
+    pond_name?: string | null;
 };
 
 /**
@@ -411,9 +515,9 @@ export type SearchResultSchema = {
 };
 
 /**
- * DoclingSettingsSchema
+ * OcrPresetSchema
  */
-export type DoclingSettingsSchema = {
+export type OcrPresetSchema = {
     /**
      * Sqid
      */
@@ -423,130 +527,519 @@ export type DoclingSettingsSchema = {
      */
     name: string;
     /**
-     * Ocr Engine
+     * Is Default
      */
-    ocr_engine: string;
+    is_default: boolean;
     /**
-     * Detect Tables
+     * Force Ocr
      */
-    detect_tables: boolean;
+    force_ocr: boolean;
     /**
-     * Detect Figures
+     * Skip Text
      */
-    detect_figures: boolean;
+    skip_text: boolean;
     /**
-     * Ignore Headers Footers
+     * Redo Ocr
      */
-    ignore_headers_footers: boolean;
+    redo_ocr: boolean;
+    /**
+     * Ocr Backend
+     */
+    ocr_backend: string;
     /**
      * Language
      */
     language: string;
     /**
-     * Confidence Threshold
+     * Optimize
      */
-    confidence_threshold: number;
+    optimize: number;
     /**
-     * Settings Json
+     * Jpeg Quality
      */
-    settings_json: {
+    jpeg_quality: number;
+    /**
+     * Png Quality
+     */
+    png_quality: number;
+    /**
+     * Deskew
+     */
+    deskew: boolean;
+    /**
+     * Do Clean
+     */
+    do_clean: boolean;
+    /**
+     * Do Clean Final
+     */
+    do_clean_final: boolean;
+    /**
+     * Remove Background
+     */
+    remove_background: boolean;
+    /**
+     * Oversample
+     */
+    oversample: number;
+    /**
+     * Rotate Pages
+     */
+    rotate_pages: boolean;
+    /**
+     * Remove Vectors
+     */
+    remove_vectors: boolean;
+    /**
+     * Advanced Settings
+     */
+    advanced_settings: {
         [key: string]: unknown;
     };
-    /**
-     * Created At
-     */
-    created_at: string;
-    /**
-     * Updated At
-     */
-    updated_at: string;
 };
 
 /**
- * DoclingSettingsUpdateSchema
+ * OcrPresetCreateSchema
  */
-export type DoclingSettingsUpdateSchema = {
+export type OcrPresetCreateSchema = {
     /**
-     * Ocr Engine
+     * Name
      */
-    ocr_engine?: string | null;
+    name: string;
     /**
-     * Detect Tables
+     * Is Default
      */
-    detect_tables?: boolean | null;
+    is_default?: boolean;
     /**
-     * Detect Figures
+     * Force Ocr
      */
-    detect_figures?: boolean | null;
+    force_ocr?: boolean;
     /**
-     * Ignore Headers Footers
+     * Skip Text
      */
-    ignore_headers_footers?: boolean | null;
+    skip_text?: boolean;
+    /**
+     * Redo Ocr
+     */
+    redo_ocr?: boolean;
+    /**
+     * Ocr Backend
+     */
+    ocr_backend?: string;
+    /**
+     * Language
+     */
+    language?: string;
+    /**
+     * Optimize
+     */
+    optimize?: number;
+    /**
+     * Jpeg Quality
+     */
+    jpeg_quality?: number;
+    /**
+     * Png Quality
+     */
+    png_quality?: number;
+    /**
+     * Deskew
+     */
+    deskew?: boolean;
+    /**
+     * Do Clean
+     */
+    do_clean?: boolean;
+    /**
+     * Do Clean Final
+     */
+    do_clean_final?: boolean;
+    /**
+     * Remove Background
+     */
+    remove_background?: boolean;
+    /**
+     * Oversample
+     */
+    oversample?: number;
+    /**
+     * Rotate Pages
+     */
+    rotate_pages?: boolean;
+    /**
+     * Remove Vectors
+     */
+    remove_vectors?: boolean;
+    /**
+     * Advanced Settings
+     */
+    advanced_settings?: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * OcrPresetUpdateSchema
+ */
+export type OcrPresetUpdateSchema = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Is Default
+     */
+    is_default?: boolean | null;
+    /**
+     * Force Ocr
+     */
+    force_ocr?: boolean | null;
+    /**
+     * Skip Text
+     */
+    skip_text?: boolean | null;
+    /**
+     * Redo Ocr
+     */
+    redo_ocr?: boolean | null;
+    /**
+     * Ocr Backend
+     */
+    ocr_backend?: string | null;
     /**
      * Language
      */
     language?: string | null;
     /**
-     * Confidence Threshold
+     * Optimize
      */
-    confidence_threshold?: number | null;
+    optimize?: number | null;
     /**
-     * Settings Json
+     * Jpeg Quality
      */
-    settings_json?: {
+    jpeg_quality?: number | null;
+    /**
+     * Png Quality
+     */
+    png_quality?: number | null;
+    /**
+     * Deskew
+     */
+    deskew?: boolean | null;
+    /**
+     * Do Clean
+     */
+    do_clean?: boolean | null;
+    /**
+     * Do Clean Final
+     */
+    do_clean_final?: boolean | null;
+    /**
+     * Remove Background
+     */
+    remove_background?: boolean | null;
+    /**
+     * Oversample
+     */
+    oversample?: number | null;
+    /**
+     * Rotate Pages
+     */
+    rotate_pages?: boolean | null;
+    /**
+     * Remove Vectors
+     */
+    remove_vectors?: boolean | null;
+    /**
+     * Advanced Settings
+     */
+    advanced_settings?: {
         [key: string]: unknown;
     } | null;
 };
 
-export type PagewiseApiHealthCheckData = {
+/**
+ * DoclingPresetSchema
+ */
+export type DoclingPresetSchema = {
+    [key: string]: unknown;
+};
+
+/**
+ * PagedDoclingPresetSchema
+ */
+export type PagedDoclingPresetSchema = {
+    /**
+     * Items
+     */
+    items: Array<DoclingPresetSchema>;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
+ * DoclingPresetCreateSchema
+ */
+export type DoclingPresetCreateSchema = {
+    /**
+     * Name
+     *
+     * Preset name
+     */
+    name: string;
+    /**
+     * Is Default
+     *
+     * Set as default preset
+     */
+    is_default?: boolean;
+    /**
+     * Pipeline Type
+     *
+     * Pipeline type: standard PDF or VLM
+     */
+    pipeline_type?: string;
+    /**
+     * Ocr Engine
+     *
+     * OCR engine to use
+     */
+    ocr_engine?: string;
+    /**
+     * Force Ocr
+     *
+     * Force full page OCR even for PDFs with text
+     */
+    force_ocr?: boolean;
+    /**
+     * Ocr Languages
+     *
+     * List of language codes for OCR (format depends on OCR engine)
+     */
+    ocr_languages?: {
+        [key: string]: unknown;
+    } | null;
+    /**
+     * Vlm Model
+     *
+     * VLM model repo ID (e.g., 'ibm-granite/granite-docling-258M')
+     */
+    vlm_model?: string | null;
+    /**
+     * Enable Picture Description
+     *
+     * Generate descriptions for images using VLM
+     */
+    enable_picture_description?: boolean;
+    /**
+     * Picture Description Prompt
+     *
+     * Prompt for picture description model
+     */
+    picture_description_prompt?: string | null;
+    /**
+     * Enable Table Structure
+     *
+     * Enable table structure extraction
+     */
+    enable_table_structure?: boolean;
+    /**
+     * Table Former Mode
+     *
+     * TableFormer extraction mode
+     */
+    table_former_mode?: string;
+    /**
+     * Enable Code Enrichment
+     *
+     * Enable specialized processing for code blocks
+     */
+    enable_code_enrichment?: boolean;
+    /**
+     * Enable Formula Enrichment
+     *
+     * Enable LaTeX formula recognition
+     */
+    enable_formula_enrichment?: boolean;
+    /**
+     * Filter Orphan Clusters
+     *
+     * Filter out orphaned text clusters (e.g., page numbers, headers)
+     */
+    filter_orphan_clusters?: boolean;
+    /**
+     * Filter Empty Clusters
+     *
+     * Filter out empty clusters in layout
+     */
+    filter_empty_clusters?: boolean;
+    /**
+     * Advanced Settings
+     *
+     * Advanced pipeline options in JSON format
+     */
+    advanced_settings?: {
+        [key: string]: unknown;
+    } | null;
+};
+
+/**
+ * DoclingPresetUpdateSchema
+ */
+export type DoclingPresetUpdateSchema = {
+    /**
+     * Name
+     *
+     * Preset name
+     */
+    name: string;
+    /**
+     * Is Default
+     *
+     * Set as default preset
+     */
+    is_default?: boolean;
+    /**
+     * Pipeline Type
+     *
+     * Pipeline type: standard PDF or VLM
+     */
+    pipeline_type?: string;
+    /**
+     * Ocr Engine
+     *
+     * OCR engine to use
+     */
+    ocr_engine?: string;
+    /**
+     * Force Ocr
+     *
+     * Force full page OCR even for PDFs with text
+     */
+    force_ocr?: boolean;
+    /**
+     * Ocr Languages
+     *
+     * List of language codes for OCR (format depends on OCR engine)
+     */
+    ocr_languages?: {
+        [key: string]: unknown;
+    } | null;
+    /**
+     * Vlm Model
+     *
+     * VLM model repo ID (e.g., 'ibm-granite/granite-docling-258M')
+     */
+    vlm_model?: string | null;
+    /**
+     * Enable Picture Description
+     *
+     * Generate descriptions for images using VLM
+     */
+    enable_picture_description?: boolean;
+    /**
+     * Picture Description Prompt
+     *
+     * Prompt for picture description model
+     */
+    picture_description_prompt?: string | null;
+    /**
+     * Enable Table Structure
+     *
+     * Enable table structure extraction
+     */
+    enable_table_structure?: boolean;
+    /**
+     * Table Former Mode
+     *
+     * TableFormer extraction mode
+     */
+    table_former_mode?: string;
+    /**
+     * Enable Code Enrichment
+     *
+     * Enable specialized processing for code blocks
+     */
+    enable_code_enrichment?: boolean;
+    /**
+     * Enable Formula Enrichment
+     *
+     * Enable LaTeX formula recognition
+     */
+    enable_formula_enrichment?: boolean;
+    /**
+     * Filter Orphan Clusters
+     *
+     * Filter out orphaned text clusters (e.g., page numbers, headers)
+     */
+    filter_orphan_clusters?: boolean;
+    /**
+     * Filter Empty Clusters
+     *
+     * Filter out empty clusters in layout
+     */
+    filter_empty_clusters?: boolean;
+    /**
+     * Advanced Settings
+     *
+     * Advanced pipeline options in JSON format
+     */
+    advanced_settings?: {
+        [key: string]: unknown;
+    } | null;
+};
+
+export type DocpondApiHealthCheckData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/health';
 };
 
-export type PagewiseApiHealthCheckResponses = {
+export type DocpondApiHealthCheckResponses = {
     /**
      * OK
      */
     200: unknown;
 };
 
-export type BucketApiListBucketsData = {
+export type PondsApiListPondsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/buckets/';
+    url: '/api/ponds/';
 };
 
-export type BucketApiListBucketsResponses = {
+export type PondsApiListPondsResponses = {
     /**
      * Response
      *
      * OK
      */
-    200: Array<BucketSchema>;
+    200: Array<PondSchema>;
 };
 
-export type BucketApiListBucketsResponse = BucketApiListBucketsResponses[keyof BucketApiListBucketsResponses];
+export type PondsApiListPondsResponse = PondsApiListPondsResponses[keyof PondsApiListPondsResponses];
 
-export type BucketApiCreateBucketData = {
-    body: BucketCreateSchema;
+export type PondsApiCreatePondData = {
+    body: PondCreateSchema;
     path?: never;
     query?: never;
-    url: '/api/buckets/';
+    url: '/api/ponds/';
 };
 
-export type BucketApiCreateBucketResponses = {
+export type PondsApiCreatePondResponses = {
     /**
      * OK
      */
-    200: BucketSchema;
+    200: PondSchema;
 };
 
-export type BucketApiCreateBucketResponse = BucketApiCreateBucketResponses[keyof BucketApiCreateBucketResponses];
+export type PondsApiCreatePondResponse = PondsApiCreatePondResponses[keyof PondsApiCreatePondResponses];
 
-export type BucketApiDeleteBucketData = {
+export type PondsApiDeletePondData = {
     body?: never;
     path: {
         /**
@@ -555,17 +1048,17 @@ export type BucketApiDeleteBucketData = {
         sqid: string;
     };
     query?: never;
-    url: '/api/buckets/{sqid}';
+    url: '/api/ponds/{sqid}';
 };
 
-export type BucketApiDeleteBucketResponses = {
+export type PondsApiDeletePondResponses = {
     /**
      * OK
      */
     200: unknown;
 };
 
-export type BucketApiGetBucketData = {
+export type PondsApiGetPondData = {
     body?: never;
     path: {
         /**
@@ -574,20 +1067,20 @@ export type BucketApiGetBucketData = {
         sqid: string;
     };
     query?: never;
-    url: '/api/buckets/{sqid}';
+    url: '/api/ponds/{sqid}';
 };
 
-export type BucketApiGetBucketResponses = {
+export type PondsApiGetPondResponses = {
     /**
      * OK
      */
-    200: BucketSchema;
+    200: PondSchema;
 };
 
-export type BucketApiGetBucketResponse = BucketApiGetBucketResponses[keyof BucketApiGetBucketResponses];
+export type PondsApiGetPondResponse = PondsApiGetPondResponses[keyof PondsApiGetPondResponses];
 
-export type BucketApiUpdateBucketData = {
-    body: BucketUpdateSchema;
+export type PondsApiUpdatePondData = {
+    body: PondUpdateSchema;
     path: {
         /**
          * Sqid
@@ -595,17 +1088,117 @@ export type BucketApiUpdateBucketData = {
         sqid: string;
     };
     query?: never;
-    url: '/api/buckets/{sqid}';
+    url: '/api/ponds/{sqid}';
 };
 
-export type BucketApiUpdateBucketResponses = {
+export type PondsApiUpdatePondResponses = {
     /**
      * OK
      */
-    200: BucketSchema;
+    200: PondSchema;
 };
 
-export type BucketApiUpdateBucketResponse = BucketApiUpdateBucketResponses[keyof BucketApiUpdateBucketResponses];
+export type PondsApiUpdatePondResponse = PondsApiUpdatePondResponses[keyof PondsApiUpdatePondResponses];
+
+export type PondsApiListPondSharesData = {
+    body?: never;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/ponds/{sqid}/shares';
+};
+
+export type PondsApiListPondSharesResponses = {
+    /**
+     * Response
+     *
+     * OK
+     */
+    200: Array<PondShareSchema>;
+};
+
+export type PondsApiListPondSharesResponse = PondsApiListPondSharesResponses[keyof PondsApiListPondSharesResponses];
+
+export type PondsApiCreatePondShareData = {
+    body: PondShareCreateSchema;
+    path?: never;
+    query?: never;
+    url: '/api/ponds/shares';
+};
+
+export type PondsApiCreatePondShareResponses = {
+    /**
+     * OK
+     */
+    200: PondShareSchema;
+};
+
+export type PondsApiCreatePondShareResponse = PondsApiCreatePondShareResponses[keyof PondsApiCreatePondShareResponses];
+
+export type PondsApiDeletePondShareData = {
+    body?: never;
+    path: {
+        /**
+         * Share Sqid
+         */
+        share_sqid: string;
+    };
+    query?: never;
+    url: '/api/ponds/shares/{share_sqid}';
+};
+
+export type PondsApiDeletePondShareResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PondsApiGetPondShareData = {
+    body?: never;
+    path: {
+        /**
+         * Share Sqid
+         */
+        share_sqid: string;
+    };
+    query?: never;
+    url: '/api/ponds/shares/{share_sqid}';
+};
+
+export type PondsApiGetPondShareResponses = {
+    /**
+     * OK
+     */
+    200: PondShareSchema;
+};
+
+export type PondsApiGetPondShareResponse = PondsApiGetPondShareResponses[keyof PondsApiGetPondShareResponses];
+
+export type PondsApiGetPublicPondData = {
+    body?: never;
+    path: {
+        /**
+         * Share Sqid
+         */
+        share_sqid: string;
+    };
+    query?: never;
+    url: '/api/ponds/public/{share_sqid}';
+};
+
+export type PondsApiGetPublicPondResponses = {
+    /**
+     * OK
+     */
+    200: PublicPondSchema;
+};
+
+export type PondsApiGetPublicPondResponse = PondsApiGetPublicPondResponses[keyof PondsApiGetPublicPondResponses];
 
 export type DocumentsApiListDocumentsData = {
     body?: never;
@@ -666,9 +1259,17 @@ export type DocumentsApiUploadDocumentData = {
          */
         title: string;
         /**
-         * Group Sqid
+         * Pond Sqid
          */
-        group_sqid: string;
+        pond_sqid: string;
+        /**
+         * Docling Preset Sqid
+         */
+        docling_preset_sqid?: string;
+        /**
+         * Ocr Preset Sqid
+         */
+        ocr_preset_sqid?: string;
         /**
          * Metadata
          */
@@ -862,6 +1463,25 @@ export type DocumentsApiGetPageImagesResponses = {
 
 export type DocumentsApiGetPageImagesResponse = DocumentsApiGetPageImagesResponses[keyof DocumentsApiGetPageImagesResponses];
 
+export type DocumentsApiReprocessPageData = {
+    body?: never;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/pages/{sqid}/reprocess';
+};
+
+export type DocumentsApiReprocessPageResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type DocumentsApiGetImageData = {
     body?: never;
     path: {
@@ -900,9 +1520,9 @@ export type DocumentsApiSearchPagesData = {
          */
         document_title?: string | null;
         /**
-         * Bucket Name
+         * Pond Name
          */
-        bucket_name?: string | null;
+        pond_name?: string | null;
     };
     url: '/api/search/';
 };
@@ -916,34 +1536,252 @@ export type DocumentsApiSearchPagesResponses = {
 
 export type DocumentsApiSearchPagesResponse = DocumentsApiSearchPagesResponses[keyof DocumentsApiSearchPagesResponses];
 
-export type DocumentsApiGetDoclingSettingsData = {
+export type OcrPresetsApiListOcrPresetsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/settings/';
+    url: '/api/ocr-presets/';
 };
 
-export type DocumentsApiGetDoclingSettingsResponses = {
+export type OcrPresetsApiListOcrPresetsResponses = {
     /**
+     * Response
+     *
      * OK
      */
-    200: DoclingSettingsSchema;
+    200: Array<OcrPresetSchema>;
 };
 
-export type DocumentsApiGetDoclingSettingsResponse = DocumentsApiGetDoclingSettingsResponses[keyof DocumentsApiGetDoclingSettingsResponses];
+export type OcrPresetsApiListOcrPresetsResponse = OcrPresetsApiListOcrPresetsResponses[keyof OcrPresetsApiListOcrPresetsResponses];
 
-export type DocumentsApiUpdateDoclingSettingsData = {
-    body: DoclingSettingsUpdateSchema;
+export type OcrPresetsApiCreateOcrPresetData = {
+    body: OcrPresetCreateSchema;
     path?: never;
     query?: never;
-    url: '/api/settings/';
+    url: '/api/ocr-presets/';
 };
 
-export type DocumentsApiUpdateDoclingSettingsResponses = {
+export type OcrPresetsApiCreateOcrPresetResponses = {
     /**
      * OK
      */
-    200: DoclingSettingsSchema;
+    200: OcrPresetSchema;
 };
 
-export type DocumentsApiUpdateDoclingSettingsResponse = DocumentsApiUpdateDoclingSettingsResponses[keyof DocumentsApiUpdateDoclingSettingsResponses];
+export type OcrPresetsApiCreateOcrPresetResponse = OcrPresetsApiCreateOcrPresetResponses[keyof OcrPresetsApiCreateOcrPresetResponses];
+
+export type OcrPresetsApiDeleteOcrPresetData = {
+    body?: never;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/ocr-presets/{sqid}';
+};
+
+export type OcrPresetsApiDeleteOcrPresetResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type OcrPresetsApiGetOcrPresetData = {
+    body?: never;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/ocr-presets/{sqid}';
+};
+
+export type OcrPresetsApiGetOcrPresetResponses = {
+    /**
+     * OK
+     */
+    200: OcrPresetSchema;
+};
+
+export type OcrPresetsApiGetOcrPresetResponse = OcrPresetsApiGetOcrPresetResponses[keyof OcrPresetsApiGetOcrPresetResponses];
+
+export type OcrPresetsApiUpdateOcrPresetData = {
+    body: OcrPresetUpdateSchema;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/ocr-presets/{sqid}';
+};
+
+export type OcrPresetsApiUpdateOcrPresetResponses = {
+    /**
+     * OK
+     */
+    200: OcrPresetSchema;
+};
+
+export type OcrPresetsApiUpdateOcrPresetResponse = OcrPresetsApiUpdateOcrPresetResponses[keyof OcrPresetsApiUpdateOcrPresetResponses];
+
+export type OcrPresetsApiGetDefaultPresetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/ocr-presets/default/get';
+};
+
+export type OcrPresetsApiGetDefaultPresetResponses = {
+    /**
+     * OK
+     */
+    200: OcrPresetSchema;
+};
+
+export type OcrPresetsApiGetDefaultPresetResponse = OcrPresetsApiGetDefaultPresetResponses[keyof OcrPresetsApiGetDefaultPresetResponses];
+
+export type DoclingPresetsApiListDoclingPresetsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/api/docling-presets/';
+};
+
+export type DoclingPresetsApiListDoclingPresetsResponses = {
+    /**
+     * OK
+     */
+    200: PagedDoclingPresetSchema;
+};
+
+export type DoclingPresetsApiListDoclingPresetsResponse = DoclingPresetsApiListDoclingPresetsResponses[keyof DoclingPresetsApiListDoclingPresetsResponses];
+
+export type DoclingPresetsApiCreateDoclingPresetData = {
+    body: DoclingPresetCreateSchema;
+    path?: never;
+    query?: never;
+    url: '/api/docling-presets/';
+};
+
+export type DoclingPresetsApiCreateDoclingPresetResponses = {
+    /**
+     * OK
+     */
+    200: DoclingPresetSchema;
+};
+
+export type DoclingPresetsApiCreateDoclingPresetResponse = DoclingPresetsApiCreateDoclingPresetResponses[keyof DoclingPresetsApiCreateDoclingPresetResponses];
+
+export type DoclingPresetsApiDeleteDoclingPresetData = {
+    body?: never;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/docling-presets/{sqid}';
+};
+
+export type DoclingPresetsApiDeleteDoclingPresetResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type DoclingPresetsApiGetDoclingPresetData = {
+    body?: never;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/docling-presets/{sqid}';
+};
+
+export type DoclingPresetsApiGetDoclingPresetResponses = {
+    /**
+     * OK
+     */
+    200: DoclingPresetSchema;
+};
+
+export type DoclingPresetsApiGetDoclingPresetResponse = DoclingPresetsApiGetDoclingPresetResponses[keyof DoclingPresetsApiGetDoclingPresetResponses];
+
+export type DoclingPresetsApiUpdateDoclingPresetData = {
+    body: DoclingPresetUpdateSchema;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/docling-presets/{sqid}';
+};
+
+export type DoclingPresetsApiUpdateDoclingPresetResponses = {
+    /**
+     * OK
+     */
+    200: DoclingPresetSchema;
+};
+
+export type DoclingPresetsApiUpdateDoclingPresetResponse = DoclingPresetsApiUpdateDoclingPresetResponses[keyof DoclingPresetsApiUpdateDoclingPresetResponses];
+
+export type DoclingPresetsApiSetDefaultDoclingPresetData = {
+    body?: never;
+    path: {
+        /**
+         * Sqid
+         */
+        sqid: string;
+    };
+    query?: never;
+    url: '/api/docling-presets/{sqid}/set-default';
+};
+
+export type DoclingPresetsApiSetDefaultDoclingPresetResponses = {
+    /**
+     * OK
+     */
+    200: DoclingPresetSchema;
+};
+
+export type DoclingPresetsApiSetDefaultDoclingPresetResponse = DoclingPresetsApiSetDefaultDoclingPresetResponses[keyof DoclingPresetsApiSetDefaultDoclingPresetResponses];
+
+export type DoclingPresetsApiGetDefaultDoclingPresetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/docling-presets/default/get';
+};
+
+export type DoclingPresetsApiGetDefaultDoclingPresetResponses = {
+    /**
+     * OK
+     */
+    200: DoclingPresetSchema;
+};
+
+export type DoclingPresetsApiGetDefaultDoclingPresetResponse = DoclingPresetsApiGetDefaultDoclingPresetResponses[keyof DoclingPresetsApiGetDefaultDoclingPresetResponses];

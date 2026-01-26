@@ -2,12 +2,11 @@
     import {createQuery} from '@tanstack/svelte-query';
     import {Folder, FileText, Plus, Upload, Clock, CheckCircle} from 'lucide-svelte';
     import DocumentCard from '$lib/components/DocumentCard.svelte';
-    import {bucketApiListBuckets, documentsApiListDocuments} from '$lib/api/sdk.gen';
-    import {bucketApiListBucketsOptions, documentsApiListDocumentsOptions} from "$lib/api/@tanstack/svelte-query.gen";
+    import {pondsApiListPondsOptions, documentsApiListDocumentsOptions} from "$lib/api/@tanstack/svelte-query.gen";
 
     // Fetch all buckets
-    const bucketsQuery = createQuery({
-        ...bucketApiListBucketsOptions()
+    const pondsQuery = createQuery({
+        ...pondsApiListPondsOptions()
     });
 
     // Fetch all documents

@@ -5,7 +5,7 @@
     import {Search, Filter, ArrowLeft} from 'lucide-svelte';
     // import SearchFilters from '$lib/components/SearchFilters.svelte';
     import {
-        bucketApiListBucketsOptions,
+        pondsApiListPondsOptions,
         documentsApiListDocumentsOptions,
         documentsApiSearchPagesOptions
     } from "$lib/api/@tanstack/svelte-query.gen";
@@ -35,7 +35,7 @@
 
     // Buckets for filtering
     const bucketsQuery = createQuery({
-        ...bucketApiListBucketsOptions()
+        ...groupsApiListGroupsOptions()
     });
 
     // Documents for filtering - use search API instead of list

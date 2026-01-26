@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, type MutationOptions, queryOptions } from '@tanstack/svelte-query';
 
 import { client } from '../client.gen';
-import { bucketApiCreateBucket, bucketApiDeleteBucket, bucketApiGetBucket, bucketApiListBuckets, bucketApiUpdateBucket, documentsApiCreateDocument, documentsApiDeleteDocument, documentsApiGetDoclingSettings, documentsApiGetDocument, documentsApiGetDocumentProgress, documentsApiGetImage, documentsApiGetPage, documentsApiGetPageImages, documentsApiListDocuments, documentsApiListPages, documentsApiSearchPages, documentsApiUpdateDoclingSettings, documentsApiUpdateDocument, documentsApiUpdatePage, documentsApiUploadDocument, type Options, pagewiseApiHealthCheck } from '../sdk.gen';
-import type { BucketApiCreateBucketData, BucketApiCreateBucketResponse, BucketApiDeleteBucketData, BucketApiGetBucketData, BucketApiGetBucketResponse, BucketApiListBucketsData, BucketApiListBucketsResponse, BucketApiUpdateBucketData, BucketApiUpdateBucketResponse, DocumentsApiCreateDocumentData, DocumentsApiCreateDocumentResponse, DocumentsApiDeleteDocumentData, DocumentsApiGetDoclingSettingsData, DocumentsApiGetDoclingSettingsResponse, DocumentsApiGetDocumentData, DocumentsApiGetDocumentProgressData, DocumentsApiGetDocumentResponse, DocumentsApiGetImageData, DocumentsApiGetImageResponse, DocumentsApiGetPageData, DocumentsApiGetPageImagesData, DocumentsApiGetPageImagesResponse, DocumentsApiGetPageResponse, DocumentsApiListDocumentsData, DocumentsApiListDocumentsResponse, DocumentsApiListPagesData, DocumentsApiListPagesResponse, DocumentsApiSearchPagesData, DocumentsApiSearchPagesResponse, DocumentsApiUpdateDoclingSettingsData, DocumentsApiUpdateDoclingSettingsResponse, DocumentsApiUpdateDocumentData, DocumentsApiUpdateDocumentResponse, DocumentsApiUpdatePageData, DocumentsApiUpdatePageResponse, DocumentsApiUploadDocumentData, DocumentsApiUploadDocumentResponse, PagewiseApiHealthCheckData } from '../types.gen';
+import { doclingPresetsApiCreateDoclingPreset, doclingPresetsApiDeleteDoclingPreset, doclingPresetsApiGetDefaultDoclingPreset, doclingPresetsApiGetDoclingPreset, doclingPresetsApiListDoclingPresets, doclingPresetsApiSetDefaultDoclingPreset, doclingPresetsApiUpdateDoclingPreset, docpondApiHealthCheck, documentsApiCreateDocument, documentsApiDeleteDocument, documentsApiGetDocument, documentsApiGetDocumentProgress, documentsApiGetImage, documentsApiGetPage, documentsApiGetPageImages, documentsApiListDocuments, documentsApiListPages, documentsApiReprocessPage, documentsApiSearchPages, documentsApiUpdateDocument, documentsApiUpdatePage, documentsApiUploadDocument, ocrPresetsApiCreateOcrPreset, ocrPresetsApiDeleteOcrPreset, ocrPresetsApiGetDefaultPreset, ocrPresetsApiGetOcrPreset, ocrPresetsApiListOcrPresets, ocrPresetsApiUpdateOcrPreset, type Options, pondsApiCreatePond, pondsApiCreatePondShare, pondsApiDeletePond, pondsApiDeletePondShare, pondsApiGetPond, pondsApiGetPondShare, pondsApiGetPublicPond, pondsApiListPonds, pondsApiListPondShares, pondsApiUpdatePond } from '../sdk.gen';
+import type { DoclingPresetsApiCreateDoclingPresetData, DoclingPresetsApiCreateDoclingPresetResponse, DoclingPresetsApiDeleteDoclingPresetData, DoclingPresetsApiGetDefaultDoclingPresetData, DoclingPresetsApiGetDefaultDoclingPresetResponse, DoclingPresetsApiGetDoclingPresetData, DoclingPresetsApiGetDoclingPresetResponse, DoclingPresetsApiListDoclingPresetsData, DoclingPresetsApiListDoclingPresetsResponse, DoclingPresetsApiSetDefaultDoclingPresetData, DoclingPresetsApiSetDefaultDoclingPresetResponse, DoclingPresetsApiUpdateDoclingPresetData, DoclingPresetsApiUpdateDoclingPresetResponse, DocpondApiHealthCheckData, DocumentsApiCreateDocumentData, DocumentsApiCreateDocumentResponse, DocumentsApiDeleteDocumentData, DocumentsApiGetDocumentData, DocumentsApiGetDocumentProgressData, DocumentsApiGetDocumentResponse, DocumentsApiGetImageData, DocumentsApiGetImageResponse, DocumentsApiGetPageData, DocumentsApiGetPageImagesData, DocumentsApiGetPageImagesResponse, DocumentsApiGetPageResponse, DocumentsApiListDocumentsData, DocumentsApiListDocumentsResponse, DocumentsApiListPagesData, DocumentsApiListPagesResponse, DocumentsApiReprocessPageData, DocumentsApiSearchPagesData, DocumentsApiSearchPagesResponse, DocumentsApiUpdateDocumentData, DocumentsApiUpdateDocumentResponse, DocumentsApiUpdatePageData, DocumentsApiUpdatePageResponse, DocumentsApiUploadDocumentData, DocumentsApiUploadDocumentResponse, OcrPresetsApiCreateOcrPresetData, OcrPresetsApiCreateOcrPresetResponse, OcrPresetsApiDeleteOcrPresetData, OcrPresetsApiGetDefaultPresetData, OcrPresetsApiGetDefaultPresetResponse, OcrPresetsApiGetOcrPresetData, OcrPresetsApiGetOcrPresetResponse, OcrPresetsApiListOcrPresetsData, OcrPresetsApiListOcrPresetsResponse, OcrPresetsApiUpdateOcrPresetData, OcrPresetsApiUpdateOcrPresetResponse, PondsApiCreatePondData, PondsApiCreatePondResponse, PondsApiCreatePondShareData, PondsApiCreatePondShareResponse, PondsApiDeletePondData, PondsApiDeletePondShareData, PondsApiGetPondData, PondsApiGetPondResponse, PondsApiGetPondShareData, PondsApiGetPondShareResponse, PondsApiGetPublicPondData, PondsApiGetPublicPondResponse, PondsApiListPondsData, PondsApiListPondSharesData, PondsApiListPondSharesResponse, PondsApiListPondsResponse, PondsApiUpdatePondData, PondsApiUpdatePondResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -39,14 +39,14 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
     return [params];
 };
 
-export const pagewiseApiHealthCheckQueryKey = (options?: Options<PagewiseApiHealthCheckData>) => createQueryKey('pagewiseApiHealthCheck', options);
+export const docpondApiHealthCheckQueryKey = (options?: Options<DocpondApiHealthCheckData>) => createQueryKey('docpondApiHealthCheck', options);
 
 /**
  * Health Check
  */
-export const pagewiseApiHealthCheckOptions = (options?: Options<PagewiseApiHealthCheckData>) => queryOptions<unknown, DefaultError, unknown, ReturnType<typeof pagewiseApiHealthCheckQueryKey>>({
+export const docpondApiHealthCheckOptions = (options?: Options<DocpondApiHealthCheckData>) => queryOptions<unknown, DefaultError, unknown, ReturnType<typeof docpondApiHealthCheckQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await pagewiseApiHealthCheck({
+        const { data } = await docpondApiHealthCheck({
             ...options,
             ...queryKey[0],
             signal,
@@ -54,19 +54,19 @@ export const pagewiseApiHealthCheckOptions = (options?: Options<PagewiseApiHealt
         });
         return data;
     },
-    queryKey: pagewiseApiHealthCheckQueryKey(options)
+    queryKey: docpondApiHealthCheckQueryKey(options)
 });
 
-export const bucketApiListBucketsQueryKey = (options?: Options<BucketApiListBucketsData>) => createQueryKey('bucketApiListBuckets', options);
+export const pondsApiListPondsQueryKey = (options?: Options<PondsApiListPondsData>) => createQueryKey('pondsApiListPonds', options);
 
 /**
- * List Buckets
+ * List Ponds
  *
- * Get all buckets
+ * Get all ponds
  */
-export const bucketApiListBucketsOptions = (options?: Options<BucketApiListBucketsData>) => queryOptions<BucketApiListBucketsResponse, DefaultError, BucketApiListBucketsResponse, ReturnType<typeof bucketApiListBucketsQueryKey>>({
+export const pondsApiListPondsOptions = (options?: Options<PondsApiListPondsData>) => queryOptions<PondsApiListPondsResponse, DefaultError, PondsApiListPondsResponse, ReturnType<typeof pondsApiListPondsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await bucketApiListBuckets({
+        const { data } = await pondsApiListPonds({
             ...options,
             ...queryKey[0],
             signal,
@@ -74,18 +74,18 @@ export const bucketApiListBucketsOptions = (options?: Options<BucketApiListBucke
         });
         return data;
     },
-    queryKey: bucketApiListBucketsQueryKey(options)
+    queryKey: pondsApiListPondsQueryKey(options)
 });
 
 /**
- * Create Bucket
+ * Create Pond
  *
- * Create a new bucket
+ * Create a new pond
  */
-export const bucketApiCreateBucketMutation = (options?: Partial<Options<BucketApiCreateBucketData>>): MutationOptions<BucketApiCreateBucketResponse, DefaultError, Options<BucketApiCreateBucketData>> => {
-    const mutationOptions: MutationOptions<BucketApiCreateBucketResponse, DefaultError, Options<BucketApiCreateBucketData>> = {
+export const pondsApiCreatePondMutation = (options?: Partial<Options<PondsApiCreatePondData>>): MutationOptions<PondsApiCreatePondResponse, DefaultError, Options<PondsApiCreatePondData>> => {
+    const mutationOptions: MutationOptions<PondsApiCreatePondResponse, DefaultError, Options<PondsApiCreatePondData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await bucketApiCreateBucket({
+            const { data } = await pondsApiCreatePond({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -97,14 +97,14 @@ export const bucketApiCreateBucketMutation = (options?: Partial<Options<BucketAp
 };
 
 /**
- * Delete Bucket
+ * Delete Pond
  *
- * Delete a bucket
+ * Delete a pond
  */
-export const bucketApiDeleteBucketMutation = (options?: Partial<Options<BucketApiDeleteBucketData>>): MutationOptions<unknown, DefaultError, Options<BucketApiDeleteBucketData>> => {
-    const mutationOptions: MutationOptions<unknown, DefaultError, Options<BucketApiDeleteBucketData>> = {
+export const pondsApiDeletePondMutation = (options?: Partial<Options<PondsApiDeletePondData>>): MutationOptions<unknown, DefaultError, Options<PondsApiDeletePondData>> => {
+    const mutationOptions: MutationOptions<unknown, DefaultError, Options<PondsApiDeletePondData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await bucketApiDeleteBucket({
+            const { data } = await pondsApiDeletePond({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -115,16 +115,16 @@ export const bucketApiDeleteBucketMutation = (options?: Partial<Options<BucketAp
     return mutationOptions;
 };
 
-export const bucketApiGetBucketQueryKey = (options: Options<BucketApiGetBucketData>) => createQueryKey('bucketApiGetBucket', options);
+export const pondsApiGetPondQueryKey = (options: Options<PondsApiGetPondData>) => createQueryKey('pondsApiGetPond', options);
 
 /**
- * Get Bucket
+ * Get Pond
  *
- * Get a specific bucket by sqid
+ * Get a specific pond by sqid
  */
-export const bucketApiGetBucketOptions = (options: Options<BucketApiGetBucketData>) => queryOptions<BucketApiGetBucketResponse, DefaultError, BucketApiGetBucketResponse, ReturnType<typeof bucketApiGetBucketQueryKey>>({
+export const pondsApiGetPondOptions = (options: Options<PondsApiGetPondData>) => queryOptions<PondsApiGetPondResponse, DefaultError, PondsApiGetPondResponse, ReturnType<typeof pondsApiGetPondQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await bucketApiGetBucket({
+        const { data } = await pondsApiGetPond({
             ...options,
             ...queryKey[0],
             signal,
@@ -132,18 +132,18 @@ export const bucketApiGetBucketOptions = (options: Options<BucketApiGetBucketDat
         });
         return data;
     },
-    queryKey: bucketApiGetBucketQueryKey(options)
+    queryKey: pondsApiGetPondQueryKey(options)
 });
 
 /**
- * Update Bucket
+ * Update Pond
  *
- * Update a bucket
+ * Update a pond
  */
-export const bucketApiUpdateBucketMutation = (options?: Partial<Options<BucketApiUpdateBucketData>>): MutationOptions<BucketApiUpdateBucketResponse, DefaultError, Options<BucketApiUpdateBucketData>> => {
-    const mutationOptions: MutationOptions<BucketApiUpdateBucketResponse, DefaultError, Options<BucketApiUpdateBucketData>> = {
+export const pondsApiUpdatePondMutation = (options?: Partial<Options<PondsApiUpdatePondData>>): MutationOptions<PondsApiUpdatePondResponse, DefaultError, Options<PondsApiUpdatePondData>> => {
+    const mutationOptions: MutationOptions<PondsApiUpdatePondResponse, DefaultError, Options<PondsApiUpdatePondData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await bucketApiUpdateBucket({
+            const { data } = await pondsApiUpdatePond({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -153,13 +153,111 @@ export const bucketApiUpdateBucketMutation = (options?: Partial<Options<BucketAp
     };
     return mutationOptions;
 };
+
+export const pondsApiListPondSharesQueryKey = (options: Options<PondsApiListPondSharesData>) => createQueryKey('pondsApiListPondShares', options);
+
+/**
+ * List Pond Shares
+ *
+ * Get all share links for a pond
+ */
+export const pondsApiListPondSharesOptions = (options: Options<PondsApiListPondSharesData>) => queryOptions<PondsApiListPondSharesResponse, DefaultError, PondsApiListPondSharesResponse, ReturnType<typeof pondsApiListPondSharesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await pondsApiListPondShares({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: pondsApiListPondSharesQueryKey(options)
+});
+
+/**
+ * Create Pond Share
+ *
+ * Create a new share link for a pond
+ */
+export const pondsApiCreatePondShareMutation = (options?: Partial<Options<PondsApiCreatePondShareData>>): MutationOptions<PondsApiCreatePondShareResponse, DefaultError, Options<PondsApiCreatePondShareData>> => {
+    const mutationOptions: MutationOptions<PondsApiCreatePondShareResponse, DefaultError, Options<PondsApiCreatePondShareData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await pondsApiCreatePondShare({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Delete Pond Share
+ *
+ * Delete a share link
+ */
+export const pondsApiDeletePondShareMutation = (options?: Partial<Options<PondsApiDeletePondShareData>>): MutationOptions<unknown, DefaultError, Options<PondsApiDeletePondShareData>> => {
+    const mutationOptions: MutationOptions<unknown, DefaultError, Options<PondsApiDeletePondShareData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await pondsApiDeletePondShare({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const pondsApiGetPondShareQueryKey = (options: Options<PondsApiGetPondShareData>) => createQueryKey('pondsApiGetPondShare', options);
+
+/**
+ * Get Pond Share
+ *
+ * Get details about a specific share link
+ */
+export const pondsApiGetPondShareOptions = (options: Options<PondsApiGetPondShareData>) => queryOptions<PondsApiGetPondShareResponse, DefaultError, PondsApiGetPondShareResponse, ReturnType<typeof pondsApiGetPondShareQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await pondsApiGetPondShare({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: pondsApiGetPondShareQueryKey(options)
+});
+
+export const pondsApiGetPublicPondQueryKey = (options: Options<PondsApiGetPublicPondData>) => createQueryKey('pondsApiGetPublicPond', options);
+
+/**
+ * Get Public Pond
+ *
+ * Get a pond via public share link (increments access count)
+ */
+export const pondsApiGetPublicPondOptions = (options: Options<PondsApiGetPublicPondData>) => queryOptions<PondsApiGetPublicPondResponse, DefaultError, PondsApiGetPublicPondResponse, ReturnType<typeof pondsApiGetPublicPondQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await pondsApiGetPublicPond({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: pondsApiGetPublicPondQueryKey(options)
+});
 
 export const documentsApiListDocumentsQueryKey = (options?: Options<DocumentsApiListDocumentsData>) => createQueryKey('documentsApiListDocuments', options);
 
 /**
  * List Documents
  *
- * Get all documents, optionally filtered by bucket
+ * Get all documents, optionally filtered by pond
  */
 export const documentsApiListDocumentsOptions = (options?: Options<DocumentsApiListDocumentsData>) => queryOptions<DocumentsApiListDocumentsResponse, DefaultError, DocumentsApiListDocumentsResponse, ReturnType<typeof documentsApiListDocumentsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -208,7 +306,7 @@ export const documentsApiListDocumentsInfiniteQueryKey = (options?: Options<Docu
 /**
  * List Documents
  *
- * Get all documents, optionally filtered by bucket
+ * Get all documents, optionally filtered by pond
  */
 export const documentsApiListDocumentsInfiniteOptions = (options?: Options<DocumentsApiListDocumentsData>) => infiniteQueryOptions<DocumentsApiListDocumentsResponse, DefaultError, InfiniteData<DocumentsApiListDocumentsResponse>, QueryKey<Options<DocumentsApiListDocumentsData>>, number | Pick<QueryKey<Options<DocumentsApiListDocumentsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
 // @ts-ignore
@@ -456,6 +554,27 @@ export const documentsApiGetPageImagesOptions = (options: Options<DocumentsApiGe
     queryKey: documentsApiGetPageImagesQueryKey(options)
 });
 
+/**
+ * Reprocess Page
+ *
+ * Reprocess a page with specified OCR model.
+ * Clears old OCR data and starts reprocessing.
+ * Useful for development, testing, and production updates.
+ */
+export const documentsApiReprocessPageMutation = (options?: Partial<Options<DocumentsApiReprocessPageData>>): MutationOptions<unknown, DefaultError, Options<DocumentsApiReprocessPageData>> => {
+    const mutationOptions: MutationOptions<unknown, DefaultError, Options<DocumentsApiReprocessPageData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await documentsApiReprocessPage({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const documentsApiGetImageQueryKey = (options: Options<DocumentsApiGetImageData>) => createQueryKey('documentsApiGetImage', options);
 
 /**
@@ -496,16 +615,16 @@ export const documentsApiSearchPagesOptions = (options?: Options<DocumentsApiSea
     queryKey: documentsApiSearchPagesQueryKey(options)
 });
 
-export const documentsApiGetDoclingSettingsQueryKey = (options?: Options<DocumentsApiGetDoclingSettingsData>) => createQueryKey('documentsApiGetDoclingSettings', options);
+export const ocrPresetsApiListOcrPresetsQueryKey = (options?: Options<OcrPresetsApiListOcrPresetsData>) => createQueryKey('ocrPresetsApiListOcrPresets', options);
 
 /**
- * Get Docling Settings
+ * List Ocr Presets
  *
- * Get current Docling settings
+ * Get all OCR presets
  */
-export const documentsApiGetDoclingSettingsOptions = (options?: Options<DocumentsApiGetDoclingSettingsData>) => queryOptions<DocumentsApiGetDoclingSettingsResponse, DefaultError, DocumentsApiGetDoclingSettingsResponse, ReturnType<typeof documentsApiGetDoclingSettingsQueryKey>>({
+export const ocrPresetsApiListOcrPresetsOptions = (options?: Options<OcrPresetsApiListOcrPresetsData>) => queryOptions<OcrPresetsApiListOcrPresetsResponse, DefaultError, OcrPresetsApiListOcrPresetsResponse, ReturnType<typeof ocrPresetsApiListOcrPresetsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await documentsApiGetDoclingSettings({
+        const { data } = await ocrPresetsApiListOcrPresets({
             ...options,
             ...queryKey[0],
             signal,
@@ -513,18 +632,18 @@ export const documentsApiGetDoclingSettingsOptions = (options?: Options<Document
         });
         return data;
     },
-    queryKey: documentsApiGetDoclingSettingsQueryKey(options)
+    queryKey: ocrPresetsApiListOcrPresetsQueryKey(options)
 });
 
 /**
- * Update Docling Settings
+ * Create Ocr Preset
  *
- * Update Docling settings
+ * Create a new OCR preset
  */
-export const documentsApiUpdateDoclingSettingsMutation = (options?: Partial<Options<DocumentsApiUpdateDoclingSettingsData>>): MutationOptions<DocumentsApiUpdateDoclingSettingsResponse, DefaultError, Options<DocumentsApiUpdateDoclingSettingsData>> => {
-    const mutationOptions: MutationOptions<DocumentsApiUpdateDoclingSettingsResponse, DefaultError, Options<DocumentsApiUpdateDoclingSettingsData>> = {
+export const ocrPresetsApiCreateOcrPresetMutation = (options?: Partial<Options<OcrPresetsApiCreateOcrPresetData>>): MutationOptions<OcrPresetsApiCreateOcrPresetResponse, DefaultError, Options<OcrPresetsApiCreateOcrPresetData>> => {
+    const mutationOptions: MutationOptions<OcrPresetsApiCreateOcrPresetResponse, DefaultError, Options<OcrPresetsApiCreateOcrPresetData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await documentsApiUpdateDoclingSettings({
+            const { data } = await ocrPresetsApiCreateOcrPreset({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -534,3 +653,246 @@ export const documentsApiUpdateDoclingSettingsMutation = (options?: Partial<Opti
     };
     return mutationOptions;
 };
+
+/**
+ * Delete Ocr Preset
+ *
+ * Delete an OCR preset
+ */
+export const ocrPresetsApiDeleteOcrPresetMutation = (options?: Partial<Options<OcrPresetsApiDeleteOcrPresetData>>): MutationOptions<unknown, DefaultError, Options<OcrPresetsApiDeleteOcrPresetData>> => {
+    const mutationOptions: MutationOptions<unknown, DefaultError, Options<OcrPresetsApiDeleteOcrPresetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await ocrPresetsApiDeleteOcrPreset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const ocrPresetsApiGetOcrPresetQueryKey = (options: Options<OcrPresetsApiGetOcrPresetData>) => createQueryKey('ocrPresetsApiGetOcrPreset', options);
+
+/**
+ * Get Ocr Preset
+ *
+ * Get a specific OCR preset by sqid
+ */
+export const ocrPresetsApiGetOcrPresetOptions = (options: Options<OcrPresetsApiGetOcrPresetData>) => queryOptions<OcrPresetsApiGetOcrPresetResponse, DefaultError, OcrPresetsApiGetOcrPresetResponse, ReturnType<typeof ocrPresetsApiGetOcrPresetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await ocrPresetsApiGetOcrPreset({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: ocrPresetsApiGetOcrPresetQueryKey(options)
+});
+
+/**
+ * Update Ocr Preset
+ *
+ * Update an OCR preset
+ */
+export const ocrPresetsApiUpdateOcrPresetMutation = (options?: Partial<Options<OcrPresetsApiUpdateOcrPresetData>>): MutationOptions<OcrPresetsApiUpdateOcrPresetResponse, DefaultError, Options<OcrPresetsApiUpdateOcrPresetData>> => {
+    const mutationOptions: MutationOptions<OcrPresetsApiUpdateOcrPresetResponse, DefaultError, Options<OcrPresetsApiUpdateOcrPresetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await ocrPresetsApiUpdateOcrPreset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const ocrPresetsApiGetDefaultPresetQueryKey = (options?: Options<OcrPresetsApiGetDefaultPresetData>) => createQueryKey('ocrPresetsApiGetDefaultPreset', options);
+
+/**
+ * Get Default Preset
+ *
+ * Get the default OCR preset
+ */
+export const ocrPresetsApiGetDefaultPresetOptions = (options?: Options<OcrPresetsApiGetDefaultPresetData>) => queryOptions<OcrPresetsApiGetDefaultPresetResponse, DefaultError, OcrPresetsApiGetDefaultPresetResponse, ReturnType<typeof ocrPresetsApiGetDefaultPresetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await ocrPresetsApiGetDefaultPreset({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: ocrPresetsApiGetDefaultPresetQueryKey(options)
+});
+
+export const doclingPresetsApiListDoclingPresetsQueryKey = (options?: Options<DoclingPresetsApiListDoclingPresetsData>) => createQueryKey('doclingPresetsApiListDoclingPresets', options);
+
+/**
+ * List Docling Presets
+ *
+ * List all Docling presets
+ */
+export const doclingPresetsApiListDoclingPresetsOptions = (options?: Options<DoclingPresetsApiListDoclingPresetsData>) => queryOptions<DoclingPresetsApiListDoclingPresetsResponse, DefaultError, DoclingPresetsApiListDoclingPresetsResponse, ReturnType<typeof doclingPresetsApiListDoclingPresetsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await doclingPresetsApiListDoclingPresets({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: doclingPresetsApiListDoclingPresetsQueryKey(options)
+});
+
+export const doclingPresetsApiListDoclingPresetsInfiniteQueryKey = (options?: Options<DoclingPresetsApiListDoclingPresetsData>): QueryKey<Options<DoclingPresetsApiListDoclingPresetsData>> => createQueryKey('doclingPresetsApiListDoclingPresets', options, true);
+
+/**
+ * List Docling Presets
+ *
+ * List all Docling presets
+ */
+export const doclingPresetsApiListDoclingPresetsInfiniteOptions = (options?: Options<DoclingPresetsApiListDoclingPresetsData>) => infiniteQueryOptions<DoclingPresetsApiListDoclingPresetsResponse, DefaultError, InfiniteData<DoclingPresetsApiListDoclingPresetsResponse>, QueryKey<Options<DoclingPresetsApiListDoclingPresetsData>>, number | Pick<QueryKey<Options<DoclingPresetsApiListDoclingPresetsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<DoclingPresetsApiListDoclingPresetsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await doclingPresetsApiListDoclingPresets({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: doclingPresetsApiListDoclingPresetsInfiniteQueryKey(options)
+});
+
+/**
+ * Create Docling Preset
+ *
+ * Create a new Docling preset
+ */
+export const doclingPresetsApiCreateDoclingPresetMutation = (options?: Partial<Options<DoclingPresetsApiCreateDoclingPresetData>>): MutationOptions<DoclingPresetsApiCreateDoclingPresetResponse, DefaultError, Options<DoclingPresetsApiCreateDoclingPresetData>> => {
+    const mutationOptions: MutationOptions<DoclingPresetsApiCreateDoclingPresetResponse, DefaultError, Options<DoclingPresetsApiCreateDoclingPresetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await doclingPresetsApiCreateDoclingPreset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Delete Docling Preset
+ *
+ * Delete a Docling preset
+ */
+export const doclingPresetsApiDeleteDoclingPresetMutation = (options?: Partial<Options<DoclingPresetsApiDeleteDoclingPresetData>>): MutationOptions<unknown, DefaultError, Options<DoclingPresetsApiDeleteDoclingPresetData>> => {
+    const mutationOptions: MutationOptions<unknown, DefaultError, Options<DoclingPresetsApiDeleteDoclingPresetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await doclingPresetsApiDeleteDoclingPreset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const doclingPresetsApiGetDoclingPresetQueryKey = (options: Options<DoclingPresetsApiGetDoclingPresetData>) => createQueryKey('doclingPresetsApiGetDoclingPreset', options);
+
+/**
+ * Get Docling Preset
+ *
+ * Get a specific Docling preset
+ */
+export const doclingPresetsApiGetDoclingPresetOptions = (options: Options<DoclingPresetsApiGetDoclingPresetData>) => queryOptions<DoclingPresetsApiGetDoclingPresetResponse, DefaultError, DoclingPresetsApiGetDoclingPresetResponse, ReturnType<typeof doclingPresetsApiGetDoclingPresetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await doclingPresetsApiGetDoclingPreset({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: doclingPresetsApiGetDoclingPresetQueryKey(options)
+});
+
+/**
+ * Update Docling Preset
+ *
+ * Update a Docling preset
+ */
+export const doclingPresetsApiUpdateDoclingPresetMutation = (options?: Partial<Options<DoclingPresetsApiUpdateDoclingPresetData>>): MutationOptions<DoclingPresetsApiUpdateDoclingPresetResponse, DefaultError, Options<DoclingPresetsApiUpdateDoclingPresetData>> => {
+    const mutationOptions: MutationOptions<DoclingPresetsApiUpdateDoclingPresetResponse, DefaultError, Options<DoclingPresetsApiUpdateDoclingPresetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await doclingPresetsApiUpdateDoclingPreset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Set Default Docling Preset
+ *
+ * Set a preset as the default
+ */
+export const doclingPresetsApiSetDefaultDoclingPresetMutation = (options?: Partial<Options<DoclingPresetsApiSetDefaultDoclingPresetData>>): MutationOptions<DoclingPresetsApiSetDefaultDoclingPresetResponse, DefaultError, Options<DoclingPresetsApiSetDefaultDoclingPresetData>> => {
+    const mutationOptions: MutationOptions<DoclingPresetsApiSetDefaultDoclingPresetResponse, DefaultError, Options<DoclingPresetsApiSetDefaultDoclingPresetData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await doclingPresetsApiSetDefaultDoclingPreset({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const doclingPresetsApiGetDefaultDoclingPresetQueryKey = (options?: Options<DoclingPresetsApiGetDefaultDoclingPresetData>) => createQueryKey('doclingPresetsApiGetDefaultDoclingPreset', options);
+
+/**
+ * Get Default Docling Preset
+ *
+ * Get the default Docling preset
+ */
+export const doclingPresetsApiGetDefaultDoclingPresetOptions = (options?: Options<DoclingPresetsApiGetDefaultDoclingPresetData>) => queryOptions<DoclingPresetsApiGetDefaultDoclingPresetResponse, DefaultError, DoclingPresetsApiGetDefaultDoclingPresetResponse, ReturnType<typeof doclingPresetsApiGetDefaultDoclingPresetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await doclingPresetsApiGetDefaultDoclingPreset({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: doclingPresetsApiGetDefaultDoclingPresetQueryKey(options)
+});

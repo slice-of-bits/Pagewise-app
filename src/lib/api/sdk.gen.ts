@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { BucketApiCreateBucketData, BucketApiCreateBucketResponses, BucketApiDeleteBucketData, BucketApiDeleteBucketResponses, BucketApiGetBucketData, BucketApiGetBucketResponses, BucketApiListBucketsData, BucketApiListBucketsResponses, BucketApiUpdateBucketData, BucketApiUpdateBucketResponses, DocumentsApiCreateDocumentData, DocumentsApiCreateDocumentResponses, DocumentsApiDeleteDocumentData, DocumentsApiDeleteDocumentResponses, DocumentsApiGetDoclingSettingsData, DocumentsApiGetDoclingSettingsResponses, DocumentsApiGetDocumentData, DocumentsApiGetDocumentProgressData, DocumentsApiGetDocumentProgressResponses, DocumentsApiGetDocumentResponses, DocumentsApiGetImageData, DocumentsApiGetImageResponses, DocumentsApiGetPageData, DocumentsApiGetPageImagesData, DocumentsApiGetPageImagesResponses, DocumentsApiGetPageResponses, DocumentsApiListDocumentsData, DocumentsApiListDocumentsResponses, DocumentsApiListPagesData, DocumentsApiListPagesResponses, DocumentsApiSearchPagesData, DocumentsApiSearchPagesResponses, DocumentsApiUpdateDoclingSettingsData, DocumentsApiUpdateDoclingSettingsResponses, DocumentsApiUpdateDocumentData, DocumentsApiUpdateDocumentResponses, DocumentsApiUpdatePageData, DocumentsApiUpdatePageResponses, DocumentsApiUploadDocumentData, DocumentsApiUploadDocumentResponses, PagewiseApiHealthCheckData, PagewiseApiHealthCheckResponses } from './types.gen';
+import type { DoclingPresetsApiCreateDoclingPresetData, DoclingPresetsApiCreateDoclingPresetResponses, DoclingPresetsApiDeleteDoclingPresetData, DoclingPresetsApiDeleteDoclingPresetResponses, DoclingPresetsApiGetDefaultDoclingPresetData, DoclingPresetsApiGetDefaultDoclingPresetResponses, DoclingPresetsApiGetDoclingPresetData, DoclingPresetsApiGetDoclingPresetResponses, DoclingPresetsApiListDoclingPresetsData, DoclingPresetsApiListDoclingPresetsResponses, DoclingPresetsApiSetDefaultDoclingPresetData, DoclingPresetsApiSetDefaultDoclingPresetResponses, DoclingPresetsApiUpdateDoclingPresetData, DoclingPresetsApiUpdateDoclingPresetResponses, DocpondApiHealthCheckData, DocpondApiHealthCheckResponses, DocumentsApiCreateDocumentData, DocumentsApiCreateDocumentResponses, DocumentsApiDeleteDocumentData, DocumentsApiDeleteDocumentResponses, DocumentsApiGetDocumentData, DocumentsApiGetDocumentProgressData, DocumentsApiGetDocumentProgressResponses, DocumentsApiGetDocumentResponses, DocumentsApiGetImageData, DocumentsApiGetImageResponses, DocumentsApiGetPageData, DocumentsApiGetPageImagesData, DocumentsApiGetPageImagesResponses, DocumentsApiGetPageResponses, DocumentsApiListDocumentsData, DocumentsApiListDocumentsResponses, DocumentsApiListPagesData, DocumentsApiListPagesResponses, DocumentsApiReprocessPageData, DocumentsApiReprocessPageResponses, DocumentsApiSearchPagesData, DocumentsApiSearchPagesResponses, DocumentsApiUpdateDocumentData, DocumentsApiUpdateDocumentResponses, DocumentsApiUpdatePageData, DocumentsApiUpdatePageResponses, DocumentsApiUploadDocumentData, DocumentsApiUploadDocumentResponses, OcrPresetsApiCreateOcrPresetData, OcrPresetsApiCreateOcrPresetResponses, OcrPresetsApiDeleteOcrPresetData, OcrPresetsApiDeleteOcrPresetResponses, OcrPresetsApiGetDefaultPresetData, OcrPresetsApiGetDefaultPresetResponses, OcrPresetsApiGetOcrPresetData, OcrPresetsApiGetOcrPresetResponses, OcrPresetsApiListOcrPresetsData, OcrPresetsApiListOcrPresetsResponses, OcrPresetsApiUpdateOcrPresetData, OcrPresetsApiUpdateOcrPresetResponses, PondsApiCreatePondData, PondsApiCreatePondResponses, PondsApiCreatePondShareData, PondsApiCreatePondShareResponses, PondsApiDeletePondData, PondsApiDeletePondResponses, PondsApiDeletePondShareData, PondsApiDeletePondShareResponses, PondsApiGetPondData, PondsApiGetPondResponses, PondsApiGetPondShareData, PondsApiGetPondShareResponses, PondsApiGetPublicPondData, PondsApiGetPublicPondResponses, PondsApiListPondsData, PondsApiListPondSharesData, PondsApiListPondSharesResponses, PondsApiListPondsResponses, PondsApiUpdatePondData, PondsApiUpdatePondResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -21,22 +21,22 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * Health Check
  */
-export const pagewiseApiHealthCheck = <ThrowOnError extends boolean = false>(options?: Options<PagewiseApiHealthCheckData, ThrowOnError>) => (options?.client ?? client).get<PagewiseApiHealthCheckResponses, unknown, ThrowOnError>({ url: '/api/health', ...options });
+export const docpondApiHealthCheck = <ThrowOnError extends boolean = false>(options?: Options<DocpondApiHealthCheckData, ThrowOnError>) => (options?.client ?? client).get<DocpondApiHealthCheckResponses, unknown, ThrowOnError>({ url: '/api/health', ...options });
 
 /**
- * List Buckets
+ * List Ponds
  *
- * Get all buckets
+ * Get all ponds
  */
-export const bucketApiListBuckets = <ThrowOnError extends boolean = false>(options?: Options<BucketApiListBucketsData, ThrowOnError>) => (options?.client ?? client).get<BucketApiListBucketsResponses, unknown, ThrowOnError>({ url: '/api/buckets/', ...options });
+export const pondsApiListPonds = <ThrowOnError extends boolean = false>(options?: Options<PondsApiListPondsData, ThrowOnError>) => (options?.client ?? client).get<PondsApiListPondsResponses, unknown, ThrowOnError>({ url: '/api/ponds/', ...options });
 
 /**
- * Create Bucket
+ * Create Pond
  *
- * Create a new bucket
+ * Create a new pond
  */
-export const bucketApiCreateBucket = <ThrowOnError extends boolean = false>(options: Options<BucketApiCreateBucketData, ThrowOnError>) => (options.client ?? client).post<BucketApiCreateBucketResponses, unknown, ThrowOnError>({
-    url: '/api/buckets/',
+export const pondsApiCreatePond = <ThrowOnError extends boolean = false>(options: Options<PondsApiCreatePondData, ThrowOnError>) => (options.client ?? client).post<PondsApiCreatePondResponses, unknown, ThrowOnError>({
+    url: '/api/ponds/',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -45,37 +45,79 @@ export const bucketApiCreateBucket = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * Delete Bucket
+ * Delete Pond
  *
- * Delete a bucket
+ * Delete a pond
  */
-export const bucketApiDeleteBucket = <ThrowOnError extends boolean = false>(options: Options<BucketApiDeleteBucketData, ThrowOnError>) => (options.client ?? client).delete<BucketApiDeleteBucketResponses, unknown, ThrowOnError>({ url: '/api/buckets/{sqid}', ...options });
+export const pondsApiDeletePond = <ThrowOnError extends boolean = false>(options: Options<PondsApiDeletePondData, ThrowOnError>) => (options.client ?? client).delete<PondsApiDeletePondResponses, unknown, ThrowOnError>({ url: '/api/ponds/{sqid}', ...options });
 
 /**
- * Get Bucket
+ * Get Pond
  *
- * Get a specific bucket by sqid
+ * Get a specific pond by sqid
  */
-export const bucketApiGetBucket = <ThrowOnError extends boolean = false>(options: Options<BucketApiGetBucketData, ThrowOnError>) => (options.client ?? client).get<BucketApiGetBucketResponses, unknown, ThrowOnError>({ url: '/api/buckets/{sqid}', ...options });
+export const pondsApiGetPond = <ThrowOnError extends boolean = false>(options: Options<PondsApiGetPondData, ThrowOnError>) => (options.client ?? client).get<PondsApiGetPondResponses, unknown, ThrowOnError>({ url: '/api/ponds/{sqid}', ...options });
 
 /**
- * Update Bucket
+ * Update Pond
  *
- * Update a bucket
+ * Update a pond
  */
-export const bucketApiUpdateBucket = <ThrowOnError extends boolean = false>(options: Options<BucketApiUpdateBucketData, ThrowOnError>) => (options.client ?? client).put<BucketApiUpdateBucketResponses, unknown, ThrowOnError>({
-    url: '/api/buckets/{sqid}',
+export const pondsApiUpdatePond = <ThrowOnError extends boolean = false>(options: Options<PondsApiUpdatePondData, ThrowOnError>) => (options.client ?? client).put<PondsApiUpdatePondResponses, unknown, ThrowOnError>({
+    url: '/api/ponds/{sqid}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
 });
+
+/**
+ * List Pond Shares
+ *
+ * Get all share links for a pond
+ */
+export const pondsApiListPondShares = <ThrowOnError extends boolean = false>(options: Options<PondsApiListPondSharesData, ThrowOnError>) => (options.client ?? client).get<PondsApiListPondSharesResponses, unknown, ThrowOnError>({ url: '/api/ponds/{sqid}/shares', ...options });
+
+/**
+ * Create Pond Share
+ *
+ * Create a new share link for a pond
+ */
+export const pondsApiCreatePondShare = <ThrowOnError extends boolean = false>(options: Options<PondsApiCreatePondShareData, ThrowOnError>) => (options.client ?? client).post<PondsApiCreatePondShareResponses, unknown, ThrowOnError>({
+    url: '/api/ponds/shares',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Pond Share
+ *
+ * Delete a share link
+ */
+export const pondsApiDeletePondShare = <ThrowOnError extends boolean = false>(options: Options<PondsApiDeletePondShareData, ThrowOnError>) => (options.client ?? client).delete<PondsApiDeletePondShareResponses, unknown, ThrowOnError>({ url: '/api/ponds/shares/{share_sqid}', ...options });
+
+/**
+ * Get Pond Share
+ *
+ * Get details about a specific share link
+ */
+export const pondsApiGetPondShare = <ThrowOnError extends boolean = false>(options: Options<PondsApiGetPondShareData, ThrowOnError>) => (options.client ?? client).get<PondsApiGetPondShareResponses, unknown, ThrowOnError>({ url: '/api/ponds/shares/{share_sqid}', ...options });
+
+/**
+ * Get Public Pond
+ *
+ * Get a pond via public share link (increments access count)
+ */
+export const pondsApiGetPublicPond = <ThrowOnError extends boolean = false>(options: Options<PondsApiGetPublicPondData, ThrowOnError>) => (options.client ?? client).get<PondsApiGetPublicPondResponses, unknown, ThrowOnError>({ url: '/api/ponds/public/{share_sqid}', ...options });
 
 /**
  * List Documents
  *
- * Get all documents, optionally filtered by bucket
+ * Get all documents, optionally filtered by pond
  */
 export const documentsApiListDocuments = <ThrowOnError extends boolean = false>(options?: Options<DocumentsApiListDocumentsData, ThrowOnError>) => (options?.client ?? client).get<DocumentsApiListDocumentsResponses, unknown, ThrowOnError>({ url: '/api/documents/', ...options });
 
@@ -179,6 +221,15 @@ export const documentsApiUpdatePage = <ThrowOnError extends boolean = false>(opt
 export const documentsApiGetPageImages = <ThrowOnError extends boolean = false>(options: Options<DocumentsApiGetPageImagesData, ThrowOnError>) => (options.client ?? client).get<DocumentsApiGetPageImagesResponses, unknown, ThrowOnError>({ url: '/api/pages/{sqid}/images/', ...options });
 
 /**
+ * Reprocess Page
+ *
+ * Reprocess a page with specified OCR model.
+ * Clears old OCR data and starts reprocessing.
+ * Useful for development, testing, and production updates.
+ */
+export const documentsApiReprocessPage = <ThrowOnError extends boolean = false>(options: Options<DocumentsApiReprocessPageData, ThrowOnError>) => (options.client ?? client).post<DocumentsApiReprocessPageResponses, unknown, ThrowOnError>({ url: '/api/pages/{sqid}/reprocess', ...options });
+
+/**
  * Get Image
  *
  * Get a specific image by sqid
@@ -193,22 +244,120 @@ export const documentsApiGetImage = <ThrowOnError extends boolean = false>(optio
 export const documentsApiSearchPages = <ThrowOnError extends boolean = false>(options?: Options<DocumentsApiSearchPagesData, ThrowOnError>) => (options?.client ?? client).get<DocumentsApiSearchPagesResponses, unknown, ThrowOnError>({ url: '/api/search/', ...options });
 
 /**
- * Get Docling Settings
+ * List Ocr Presets
  *
- * Get current Docling settings
+ * Get all OCR presets
  */
-export const documentsApiGetDoclingSettings = <ThrowOnError extends boolean = false>(options?: Options<DocumentsApiGetDoclingSettingsData, ThrowOnError>) => (options?.client ?? client).get<DocumentsApiGetDoclingSettingsResponses, unknown, ThrowOnError>({ url: '/api/settings/', ...options });
+export const ocrPresetsApiListOcrPresets = <ThrowOnError extends boolean = false>(options?: Options<OcrPresetsApiListOcrPresetsData, ThrowOnError>) => (options?.client ?? client).get<OcrPresetsApiListOcrPresetsResponses, unknown, ThrowOnError>({ url: '/api/ocr-presets/', ...options });
 
 /**
- * Update Docling Settings
+ * Create Ocr Preset
  *
- * Update Docling settings
+ * Create a new OCR preset
  */
-export const documentsApiUpdateDoclingSettings = <ThrowOnError extends boolean = false>(options: Options<DocumentsApiUpdateDoclingSettingsData, ThrowOnError>) => (options.client ?? client).put<DocumentsApiUpdateDoclingSettingsResponses, unknown, ThrowOnError>({
-    url: '/api/settings/',
+export const ocrPresetsApiCreateOcrPreset = <ThrowOnError extends boolean = false>(options: Options<OcrPresetsApiCreateOcrPresetData, ThrowOnError>) => (options.client ?? client).post<OcrPresetsApiCreateOcrPresetResponses, unknown, ThrowOnError>({
+    url: '/api/ocr-presets/',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
 });
+
+/**
+ * Delete Ocr Preset
+ *
+ * Delete an OCR preset
+ */
+export const ocrPresetsApiDeleteOcrPreset = <ThrowOnError extends boolean = false>(options: Options<OcrPresetsApiDeleteOcrPresetData, ThrowOnError>) => (options.client ?? client).delete<OcrPresetsApiDeleteOcrPresetResponses, unknown, ThrowOnError>({ url: '/api/ocr-presets/{sqid}', ...options });
+
+/**
+ * Get Ocr Preset
+ *
+ * Get a specific OCR preset by sqid
+ */
+export const ocrPresetsApiGetOcrPreset = <ThrowOnError extends boolean = false>(options: Options<OcrPresetsApiGetOcrPresetData, ThrowOnError>) => (options.client ?? client).get<OcrPresetsApiGetOcrPresetResponses, unknown, ThrowOnError>({ url: '/api/ocr-presets/{sqid}', ...options });
+
+/**
+ * Update Ocr Preset
+ *
+ * Update an OCR preset
+ */
+export const ocrPresetsApiUpdateOcrPreset = <ThrowOnError extends boolean = false>(options: Options<OcrPresetsApiUpdateOcrPresetData, ThrowOnError>) => (options.client ?? client).put<OcrPresetsApiUpdateOcrPresetResponses, unknown, ThrowOnError>({
+    url: '/api/ocr-presets/{sqid}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Default Preset
+ *
+ * Get the default OCR preset
+ */
+export const ocrPresetsApiGetDefaultPreset = <ThrowOnError extends boolean = false>(options?: Options<OcrPresetsApiGetDefaultPresetData, ThrowOnError>) => (options?.client ?? client).get<OcrPresetsApiGetDefaultPresetResponses, unknown, ThrowOnError>({ url: '/api/ocr-presets/default/get', ...options });
+
+/**
+ * List Docling Presets
+ *
+ * List all Docling presets
+ */
+export const doclingPresetsApiListDoclingPresets = <ThrowOnError extends boolean = false>(options?: Options<DoclingPresetsApiListDoclingPresetsData, ThrowOnError>) => (options?.client ?? client).get<DoclingPresetsApiListDoclingPresetsResponses, unknown, ThrowOnError>({ url: '/api/docling-presets/', ...options });
+
+/**
+ * Create Docling Preset
+ *
+ * Create a new Docling preset
+ */
+export const doclingPresetsApiCreateDoclingPreset = <ThrowOnError extends boolean = false>(options: Options<DoclingPresetsApiCreateDoclingPresetData, ThrowOnError>) => (options.client ?? client).post<DoclingPresetsApiCreateDoclingPresetResponses, unknown, ThrowOnError>({
+    url: '/api/docling-presets/',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Docling Preset
+ *
+ * Delete a Docling preset
+ */
+export const doclingPresetsApiDeleteDoclingPreset = <ThrowOnError extends boolean = false>(options: Options<DoclingPresetsApiDeleteDoclingPresetData, ThrowOnError>) => (options.client ?? client).delete<DoclingPresetsApiDeleteDoclingPresetResponses, unknown, ThrowOnError>({ url: '/api/docling-presets/{sqid}', ...options });
+
+/**
+ * Get Docling Preset
+ *
+ * Get a specific Docling preset
+ */
+export const doclingPresetsApiGetDoclingPreset = <ThrowOnError extends boolean = false>(options: Options<DoclingPresetsApiGetDoclingPresetData, ThrowOnError>) => (options.client ?? client).get<DoclingPresetsApiGetDoclingPresetResponses, unknown, ThrowOnError>({ url: '/api/docling-presets/{sqid}', ...options });
+
+/**
+ * Update Docling Preset
+ *
+ * Update a Docling preset
+ */
+export const doclingPresetsApiUpdateDoclingPreset = <ThrowOnError extends boolean = false>(options: Options<DoclingPresetsApiUpdateDoclingPresetData, ThrowOnError>) => (options.client ?? client).put<DoclingPresetsApiUpdateDoclingPresetResponses, unknown, ThrowOnError>({
+    url: '/api/docling-presets/{sqid}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Set Default Docling Preset
+ *
+ * Set a preset as the default
+ */
+export const doclingPresetsApiSetDefaultDoclingPreset = <ThrowOnError extends boolean = false>(options: Options<DoclingPresetsApiSetDefaultDoclingPresetData, ThrowOnError>) => (options.client ?? client).post<DoclingPresetsApiSetDefaultDoclingPresetResponses, unknown, ThrowOnError>({ url: '/api/docling-presets/{sqid}/set-default', ...options });
+
+/**
+ * Get Default Docling Preset
+ *
+ * Get the default Docling preset
+ */
+export const doclingPresetsApiGetDefaultDoclingPreset = <ThrowOnError extends boolean = false>(options?: Options<DoclingPresetsApiGetDefaultDoclingPresetData, ThrowOnError>) => (options?.client ?? client).get<DoclingPresetsApiGetDefaultDoclingPresetResponses, unknown, ThrowOnError>({ url: '/api/docling-presets/default/get', ...options });

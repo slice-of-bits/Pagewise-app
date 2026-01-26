@@ -5,8 +5,6 @@
 	import Header from '$lib/components/Header.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 
-    export const ssr = false;
-
     import { client } from '$lib/api/client.gen';
     import { PUBLIC_API_HOST } from '$env/static/public';
     import {browser} from "$app/environment";

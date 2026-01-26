@@ -43,6 +43,14 @@
 					>
 						Documents
 					</a>
+					<a
+						href="/system/settings"
+						class="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
+						class:text-blue-600={$page.url.pathname.startsWith('/system')}
+						class:text-gray-700={!$page.url.pathname.startsWith('/system')}
+					>
+						Settings
+					</a>
 				</nav>
 			</div>
 
@@ -107,6 +115,15 @@
 						class:text-blue-600={$page.url.pathname.startsWith('/documents')}
 					>
 						Documents
+					</a>
+					<a
+						href="/system/settings"
+						onclick={() => showMobileMenu = false}
+						class="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+						class:bg-blue-50={$page.url.pathname.startsWith('/system')}
+						class:text-blue-600={$page.url.pathname.startsWith('/system')}
+					>
+						Settings
 					</a>
 					<a
 						href="/upload"

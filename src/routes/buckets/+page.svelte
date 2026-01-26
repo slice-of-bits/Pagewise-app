@@ -1,78 +1,78 @@
 <script lang="ts">
 	import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { Folder, Plus, Edit, Trash2, FileText } from 'lucide-svelte';
-	import { bucketApiListBuckets, bucketApiCreateBucket, bucketApiDeleteBucket } from '$lib/api/sdk.gen';
+	import { groupApiListGroups, groupApiCreateGroup, groupApiDeleteGroup } from '$lib/api/sdk.gen';
 
 	let showCreateModal = $state(false);
-	let newBucketName = $state('');
-	let newBucketDescription = $state('');
+	let newGroupName = $state('');
+	let newGroupDescription = $state('');
 
 	const queryClient = useQueryClient();
 
-	// Fetch all buckets
-	const bucketsQuery = createQuery(() => ({
-		queryKey: ['buckets'],
+	// Fetch all groups
+	const groupsQuery = createQuery(() => ({
+		queryKey: ['groups'],
 		queryFn: async () => {
-			const response = await bucketApiListBuckets();
+			const response = await groupApiListGroups();
 			return response.data || [];
 		}
 	}));
 
-	// Create bucket mutation
-	const createBucketMutation = createMutation(() => ({
+	// Create group mutation
+	const createGroupMutation = createMutation(() => ({
 		mutationFn: async ({ name, description }: { name: string; description?: string }) => {
-			const response = await bucketApiCreateBucket({
+			const response = await groupApiCreateGroup({
 				body: { name, description }
 			});
 			return response.data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['buckets'] });
+			queryClient.invalidateQueries({ queryKey: ['groups'] });
 			showCreateModal = false;
-			newBucketName = '';
-			newBucketDescription = '';
+			newGroupName = '';
+			newGroupDescription = '';
 		}
 	}));
 
-	// Delete bucket mutation
-	const deleteBucketMutation = createMutation(() => ({
-		mutationFn: async (bucketId: string) => {
-			await bucketApiDeleteBucket({
-				path: { sqid: bucketId }
+	// Delete group mutation
+	const deleteGroupMutation = createMutation(() => ({
+		mutationFn: async (groupId: string) => {
+			await groupApiDeleteGroup({
+				path: { sqid: groupId }
 			});
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['buckets'] });
+			queryClient.invalidateQueries({ queryKey: ['groups'] });
 		}
 	}));
 
-	function handleCreateBucket() {
-		if (newBucketName.trim()) {
-			createBucketMutation.mutate({
-				name: newBucketName.trim(),
-				description: newBucketDescription.trim() || undefined
+	function handleCreateGroup() {
+		if (newGroupName.trim()) {
+			createGroupMutation.mutate({
+				name: newGroupName.trim(),
+				description: newGroupDescription.trim() || undefined
 			});
 		}
 	}
 
-	function handleDeleteBucket(bucketId: string, bucketName: string) {
-		if (confirm(`Are you sure you want to delete the bucket "${bucketName}"?`)) {
-			deleteBucketMutation.mutate(bucketId);
+	function handleDeleteGroup(groupId: string, groupName: string) {
+		if (confirm(`Are you sure you want to delete the group "${groupName}"?`)) {
+			deleteGroupMutation.mutate(groupId);
 		}
 	}
 </script>
 
 <svelte:head>
-	<title>Buckets - Pagewise</title>
+	<title>Groups - Pagewise</title>
 </svelte:head>
 
 <div class="space-y-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-bold text-gray-900">Buckets</h1>
+			<h1 class="text-2xl font-bold text-gray-900">Groups</h1>
 			<p class="mt-1 text-sm text-gray-600">
-				Organize your documents into buckets for better management
+				Organize your documents into groups for better management
 			</p>
 		</div>
 
@@ -81,27 +81,27 @@
 			class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
 		>
 			<Plus class="mr-2 h-4 w-4" />
-			New Bucket
+			New Group
 		</button>
 	</div>
 
-	<!-- Buckets Grid -->
-	{#if bucketsQuery.isLoading}
+	<!-- Groups Grid -->
+	{#if groupsQuery.isLoading}
 		<div class="text-center py-12">
 			<div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-			<p class="mt-4 text-gray-600">Loading buckets...</p>
+			<p class="mt-4 text-gray-600">Loading groups...</p>
 		</div>
-	{:else if bucketsQuery.error}
+	{:else if groupsQuery.error}
 		<div class="text-center py-12">
-			<p class="text-red-600">Error loading buckets. Please try again.</p>
+			<p class="text-red-600">Error loading groups. Please try again.</p>
 		</div>
-	{:else if Array.isArray(bucketsQuery.data) && bucketsQuery.data.length === 0}
+	{:else if Array.isArray(groupsQuery.data) && groupsQuery.data.length === 0}
 		<!-- Empty State -->
 		<div class="text-center py-12">
 			<Folder class="mx-auto h-24 w-24 text-gray-300" />
-			<h3 class="mt-4 text-lg font-medium text-gray-900">No buckets yet</h3>
+			<h3 class="mt-4 text-lg font-medium text-gray-900">No groups yet</h3>
 			<p class="mt-2 text-gray-500">
-				Get started by creating your first bucket to organize documents.
+				Get started by creating your first group to organize documents.
 			</p>
 			<div class="mt-6">
 				<button
@@ -109,13 +109,13 @@
 					class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
 				>
 					<Plus class="mr-2 h-4 w-4" />
-					Create Bucket
+					Create Group
 				</button>
 			</div>
 		</div>
 	{:else}
 		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{#each (bucketsQuery.data as any[]) || [] as bucket (bucket.sqid)}
+			{#each (groupsQuery.data as any[]) || [] as group (group.sqid)}
 				<div class="group relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
 					<div class="flex items-start justify-between">
 						<div class="flex items-center space-x-3 min-w-0 flex-1">
@@ -124,11 +124,11 @@
 							</div>
 							<div class="min-w-0 flex-1">
 								<h3 class="text-lg font-medium text-gray-900 truncate">
-									{bucket.name}
+									{group.name}
 								</h3>
-								{#if bucket.description}
+								{#if group.description}
 									<p class="mt-1 text-sm text-gray-600 line-clamp-2">
-										{bucket.description}
+										{group.description}
 									</p>
 								{/if}
 							</div>
@@ -138,14 +138,14 @@
 						<div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
 							<button
 								class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
-								title="Edit bucket"
+								title="Edit group"
 							>
 								<Edit class="h-4 w-4" />
 							</button>
 							<button
-								onclick={() => handleDeleteBucket(bucket.sqid, bucket.name)}
+								onclick={() => handleDeleteGroup(group.sqid, group.name)}
 								class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
-								title="Delete bucket"
+								title="Delete group"
 							>
 								<Trash2 class="h-4 w-4" />
 							</button>
@@ -155,14 +155,14 @@
 					<!-- Stats -->
 					<div class="mt-4 flex items-center text-sm text-gray-500">
 						<FileText class="mr-1 h-4 w-4" />
-						{bucket.documents_count || 0} document{(bucket.documents_count || 0) !== 1 ? 's' : ''}
+						{group.documents_count || 0} document{(group.documents_count || 0) !== 1 ? 's' : ''}
 					</div>
 
 					<!-- Link to view documents -->
 					<a
-						href={`/documents?bucket=${bucket.sqid}`}
+						href={`/documents?group=${group.sqid}`}
 						class="absolute inset-0 rounded-lg"
-						aria-label={`View documents in ${bucket.name}`}
+						aria-label={`View documents in ${group.name}`}
 					></a>
 				</div>
 			{/each}
@@ -170,7 +170,7 @@
 	{/if}
 </div>
 
-<!-- Create Bucket Modal -->
+<!-- Create Group Modal -->
 {#if showCreateModal}
 	<div class="fixed inset-0 z-50 overflow-y-auto">
 		<div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -186,30 +186,30 @@
 						</div>
 						<div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
 							<h3 class="text-lg leading-6 font-medium text-gray-900">
-								Create New Bucket
+								Create New Group
 							</h3>
 							<div class="mt-4 space-y-4">
 								<div>
-									<label for="bucket-name" class="block text-sm font-medium text-gray-700">
+									<label for="group-name" class="block text-sm font-medium text-gray-700">
 										Name *
 									</label>
 									<input
 										type="text"
-										id="bucket-name"
-										bind:value={newBucketName}
-										placeholder="Enter bucket name"
+										id="group-name"
+										bind:value={newGroupName}
+										placeholder="Enter group name"
 										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
 									/>
 								</div>
 								<div>
-									<label for="bucket-description" class="block text-sm font-medium text-gray-700">
+									<label for="group-description" class="block text-sm font-medium text-gray-700">
 										Description (optional)
 									</label>
 									<textarea
-										id="bucket-description"
-										bind:value={newBucketDescription}
+										id="group-description"
+										bind:value={newGroupDescription}
 										rows={3}
-										placeholder="Enter bucket description"
+										placeholder="Enter group description"
 										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
 									></textarea>
 								</div>
@@ -220,22 +220,22 @@
 				<div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
 					<button
 						type="button"
-						onclick={handleCreateBucket}
-						disabled={!newBucketName.trim() || createBucketMutation.isPending}
+						onclick={handleCreateGroup}
+						disabled={!newGroupName.trim() || createGroupMutation.isPending}
 						class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{#if createBucketMutation.isPending}
+						{#if createGroupMutation.isPending}
 							Creating...
 						{:else}
-							Create Bucket
+							Create Group
 						{/if}
 					</button>
 					<button
 						type="button"
 						onclick={() => {
 							showCreateModal = false;
-							newBucketName = '';
-							newBucketDescription = '';
+							newGroupName = '';
+							newGroupDescription = '';
 						}}
 						class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
 					>

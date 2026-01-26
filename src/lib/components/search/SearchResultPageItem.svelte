@@ -1,6 +1,8 @@
 <script lang="ts">
     import { FileText, ArrowRight } from 'lucide-svelte';
     import { goto } from '$app/navigation';
+    import SvelteMarkdown from "svelte-markdown";
+    import ImageComponent from "$lib/components/markdownrenders/ImageComponent.svelte";
 
     let { page, query, documentSqid } = $props();
 
@@ -41,6 +43,10 @@
             goto(`/documents/${documentSqid}?page=${page.page_number}`);
         }
     }
+
+    let renderers = {
+        image: ImageComponent
+    };
 </script>
 
 <button
@@ -70,28 +76,10 @@
             <!-- Search Result Content - Snippet with Markdown -->
             {#if page.snippet}
                 <div class="text-sm text-gray-800 leading-relaxed mb-2 prose prose-sm max-w-none">
-                    {@html renderSnippet(page.snippet, query)}
+                    <SvelteMarkdown source={page.snippet} renderers={renderers}/>
+                    <!--{@html renderSnippet(, query)}-->
                 </div>
             {/if}
-
-            <!-- Metadata -->
-            <div class="flex items-center justify-between mt-3">
-                <div class="flex items-center space-x-4 text-xs text-gray-500">
-                    {#if page.processing_status}
-                        <span class="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-800">
-                            {page.processing_status}
-                        </span>
-                    {/if}
-
-                    {#if page.created_at}
-                        <span>
-                            {new Date(page.created_at).toLocaleDateString()}
-                        </span>
-                    {/if}
-                </div>
-
-                <ArrowRight class="h-4 w-4 text-gray-400" />
-            </div>
         </div>
     </div>
 </button>

@@ -28,12 +28,12 @@
 						Home
 					</a>
 					<a
-						href="/buckets"
+						href="/ponds"
 						class="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-						class:text-blue-600={$page.url.pathname.startsWith('/buckets')}
-						class:text-gray-700={!$page.url.pathname.startsWith('/buckets')}
+						class:text-blue-600={$page.url.pathname.startsWith('/ponds')}
+						class:text-gray-700={!$page.url.pathname.startsWith('/ponds')}
 					>
-						Buckets
+						Ponds
 					</a>
 					<a
 						href="/documents"

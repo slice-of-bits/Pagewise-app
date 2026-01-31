@@ -21,13 +21,10 @@
 
 <!-- Page Content -->
 
-{#if showEditor && pageSqid}
+{#if showEditor && $pageQuery.isSuccess}
+    <!-- Full-screen Docling Editor -->
     <DoclingPageEditor
-        {pageSqid}
-        {documentSqid}
-        {currentPageNumber}
-        {totalPages}
-        {onPageChange}
+        page={$pageQuery.data}
         onClose={() => showEditor = false}
     />
 {:else}
@@ -44,14 +41,11 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-6">
-    <!--            <div class="col-span-2">-->
-    <!--                <DocumentMarkDownViewer content={$pageQuery.data.ocr_markdown_raw} />-->
-    <!--            </div>-->
-                <div class="col-span-4">
+            <div class="grid grid-cols-12 gap-4 p-4">
+                <div class="col-span-6">
                     <DocumentPageViewer page={$pageQuery.data}  />
                 </div>
-                <div class="col-span-2">
+                <div class="col-span-6">
                     <DocumentMarkDownViewer content={$pageQuery.data.text_markdown_clean} />
                 </div>
             </div>

@@ -13,6 +13,10 @@ export { default as DoclingBBoxViewer } from './DoclingBBoxViewer.svelte';
 export { default as DoclingDataEditor } from './DoclingDataEditor.svelte';
 export { default as DoclingColorLegend } from './DoclingColorLegend.svelte';
 
+// State Management
+export { DoclingStateManager } from './DoclingStateManager';
+export type { SimplifiedBlock, DoclingJSON } from './DoclingStateManager';
+
 // Type Definitions
 export type {
 	BBox,

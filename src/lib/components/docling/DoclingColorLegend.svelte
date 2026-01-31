@@ -10,12 +10,15 @@
 
 	const colorMap = [
 		{ type: 'text', color: '#3B82F6', label: 'Text' },
+		{ type: 'section_header', color: '#9333EA', label: 'Section Header' },
 		{ type: 'title', color: '#8B5CF6', label: 'Title' },
 		{ type: 'heading', color: '#6366F1', label: 'Heading' },
 		{ type: 'paragraph', color: '#3B82F6', label: 'Paragraph' },
 		{ type: 'list', color: '#10B981', label: 'List' },
+		{ type: 'list_item', color: '#059669', label: 'List Item' },
 		{ type: 'table', color: '#F59E0B', label: 'Table' },
 		{ type: 'figure', color: '#EC4899', label: 'Figure' },
+		{ type: 'picture', color: '#DB2777', label: 'Picture' },
 		{ type: 'caption', color: '#14B8A6', label: 'Caption' },
 		{ type: 'formula', color: '#F97316', label: 'Formula' },
 		{ type: 'footnote', color: '#6B7280', label: 'Footnote' },

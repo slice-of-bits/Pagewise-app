@@ -28,7 +28,7 @@ export const docpondApiHealthCheck = <ThrowOnError extends boolean = false>(opti
  *
  * Get all ponds
  */
-export const pondsApiListPonds = <ThrowOnError extends boolean = false>(options?: Options<PondsApiListPondsData, ThrowOnError>) => (options?.client ?? client).get<PondsApiListPondsResponses, unknown, ThrowOnError>({ url: '/api/ponds/', ...options });
+export const pondsApiListPonds = <ThrowOnError extends boolean = false>(options?: Options<PondsApiListPondsData, ThrowOnError>) => (options?.client ?? client).get<PondsApiListPondsResponses, unknown, ThrowOnError>({ url: '/api/ponds', ...options });
 
 /**
  * Create Pond
@@ -36,7 +36,7 @@ export const pondsApiListPonds = <ThrowOnError extends boolean = false>(options?
  * Create a new pond
  */
 export const pondsApiCreatePond = <ThrowOnError extends boolean = false>(options: Options<PondsApiCreatePondData, ThrowOnError>) => (options.client ?? client).post<PondsApiCreatePondResponses, unknown, ThrowOnError>({
-    url: '/api/ponds/',
+    url: '/api/ponds',
     ...options,
     headers: {
         'Content-Type': 'application/json',

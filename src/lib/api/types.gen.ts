@@ -229,27 +229,47 @@ export type PagedDocumentSchema = {
  */
 export type DocumentCreateSchema = {
     /**
+     * Processing Progress
+     */
+    processing_progress: number;
+    /**
+     * Pages
+     */
+    pages: Array<PageSchema>;
+    /**
+     * Sqid
+     */
+    sqid: string;
+    /**
      * Title
      */
     title: string;
     /**
-     * Pond Sqid
+     * Thumbnail
      */
-    pond_sqid: string;
+    thumbnail?: string | null;
     /**
-     * Docling Preset Sqid
+     * Page Count
      */
-    docling_preset_sqid?: string | null;
+    page_count?: number;
     /**
-     * Ocr Preset Sqid
+     * Original Pdf
      */
-    ocr_preset_sqid?: string | null;
+    original_pdf: string;
     /**
      * Metadata
      */
     metadata?: {
         [key: string]: unknown;
     } | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
 };
 
 /**
@@ -259,15 +279,19 @@ export type DocumentUpdateSchema = {
     /**
      * Title
      */
-    title?: string | null;
+    title: string;
     /**
-     * Docling Preset Sqid
+     * Docling Preset
+     *
+     * Docling preset to use for processing
      */
-    docling_preset_sqid?: string | null;
+    docling_preset_id?: number | null;
     /**
-     * Ocr Preset Sqid
+     * Ocr Preset
+     *
+     * OCR preset to use for preprocessing (runs before page splitting)
      */
-    ocr_preset_sqid?: string | null;
+    ocr_preset_id?: number | null;
     /**
      * Metadata
      */
@@ -405,9 +429,9 @@ export type ImageSchema = {
     /**
      * Metadata
      */
-    metadata: {
+    metadata?: {
         [key: string]: unknown;
-    };
+    } | null;
     /**
      * Created At
      */
@@ -441,73 +465,13 @@ export type SearchFilterSchema = {
 };
 
 /**
- * SearchDocumentSchema
- */
-export type SearchDocumentSchema = {
-    /**
-     * Sqid
-     */
-    sqid: string;
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Thumbnail
-     */
-    thumbnail?: string | null;
-    /**
-     * Pages
-     */
-    pages: Array<SearchPageSchema>;
-    /**
-     * Max Relevance Score
-     */
-    max_relevance_score: number;
-};
-
-/**
- * SearchPageSchema
- */
-export type SearchPageSchema = {
-    /**
-     * Snippet
-     */
-    snippet?: string | null;
-    /**
-     * Relevance Score
-     */
-    relevance_score?: number | null;
-    /**
-     * Sqid
-     */
-    sqid: string;
-    /**
-     * Page Number
-     */
-    page_number: number;
-    /**
-     * Text Markdown Clean
-     */
-    text_markdown_clean?: string | null;
-    /**
-     * Processing Status
-     */
-    processing_status?: string;
-    /**
-     * Created At
-     */
-    created_at: string;
-};
-
-/**
  * SearchResultSchema
  */
 export type SearchResultSchema = {
     /**
      * Documents
      */
-    documents: Array<SearchDocumentSchema>;
+    documents: Array<DocumentSchema>;
     /**
      * Total Results
      */
@@ -524,78 +488,114 @@ export type OcrPresetSchema = {
     sqid: string;
     /**
      * Name
+     *
+     * Preset name
      */
     name: string;
     /**
      * Is Default
+     *
+     * Set as default preset
      */
-    is_default: boolean;
+    is_default?: boolean;
     /**
      * Force Ocr
+     *
+     * Force OCR even if document already contains text
      */
-    force_ocr: boolean;
+    force_ocr?: boolean;
     /**
      * Skip Text
+     *
+     * Skip OCR on pages that already have text
      */
-    skip_text: boolean;
+    skip_text?: boolean;
     /**
      * Redo Ocr
+     *
+     * Remove existing OCR and redo it
      */
-    redo_ocr: boolean;
+    redo_ocr?: boolean;
     /**
      * Ocr Backend
+     *
+     * OCR engine to use
      */
-    ocr_backend: string;
+    ocr_backend?: string;
     /**
      * Language
+     *
+     * OCR language code (e.g., 'eng', 'nld', 'eng+nld')
      */
-    language: string;
+    language?: string;
     /**
      * Optimize
+     *
+     * PDF optimization level
      */
-    optimize: number;
+    optimize?: number;
     /**
      * Jpeg Quality
+     *
+     * JPEG quality for images (1-100)
      */
-    jpeg_quality: number;
+    jpeg_quality?: number;
     /**
      * Png Quality
+     *
+     * PNG quality for images (1-100)
      */
-    png_quality: number;
+    png_quality?: number;
     /**
      * Deskew
+     *
+     * Deskew pages before OCR
      */
-    deskew: boolean;
+    deskew?: boolean;
     /**
      * Do Clean
+     *
+     * Clean pages before OCR (removes background noise)
      */
-    do_clean: boolean;
+    do_clean?: boolean;
     /**
      * Do Clean Final
+     *
+     * Clean pages after OCR
      */
-    do_clean_final: boolean;
+    do_clean_final?: boolean;
     /**
      * Remove Background
+     *
+     * Remove background from pages
      */
-    remove_background: boolean;
+    remove_background?: boolean;
     /**
      * Oversample
+     *
+     * Oversample images to at least this DPI (0 = no oversampling)
      */
-    oversample: number;
+    oversample?: number;
     /**
      * Rotate Pages
+     *
+     * Rotate pages to correct orientation
      */
-    rotate_pages: boolean;
+    rotate_pages?: boolean;
     /**
      * Remove Vectors
+     *
+     * Remove vector graphics from PDF
      */
-    remove_vectors: boolean;
+    remove_vectors?: boolean;
     /**
      * Advanced Settings
+     *
+     * Additional OCRmyPDF arguments in JSON format
      */
-    advanced_settings: {
+    advanced_settings?: {
         [key: string]: unknown;
-    };
+    } | null;
 };
 
 /**
@@ -604,158 +604,121 @@ export type OcrPresetSchema = {
 export type OcrPresetCreateSchema = {
     /**
      * Name
+     *
+     * Preset name
      */
     name: string;
     /**
      * Is Default
+     *
+     * Set as default preset
      */
     is_default?: boolean;
     /**
      * Force Ocr
+     *
+     * Force OCR even if document already contains text
      */
     force_ocr?: boolean;
     /**
      * Skip Text
+     *
+     * Skip OCR on pages that already have text
      */
     skip_text?: boolean;
     /**
      * Redo Ocr
+     *
+     * Remove existing OCR and redo it
      */
     redo_ocr?: boolean;
     /**
      * Ocr Backend
+     *
+     * OCR engine to use
      */
     ocr_backend?: string;
     /**
      * Language
+     *
+     * OCR language code (e.g., 'eng', 'nld', 'eng+nld')
      */
     language?: string;
     /**
      * Optimize
+     *
+     * PDF optimization level
      */
     optimize?: number;
     /**
      * Jpeg Quality
+     *
+     * JPEG quality for images (1-100)
      */
     jpeg_quality?: number;
     /**
      * Png Quality
+     *
+     * PNG quality for images (1-100)
      */
     png_quality?: number;
     /**
      * Deskew
+     *
+     * Deskew pages before OCR
      */
     deskew?: boolean;
     /**
      * Do Clean
+     *
+     * Clean pages before OCR (removes background noise)
      */
     do_clean?: boolean;
     /**
      * Do Clean Final
+     *
+     * Clean pages after OCR
      */
     do_clean_final?: boolean;
     /**
      * Remove Background
+     *
+     * Remove background from pages
      */
     remove_background?: boolean;
     /**
      * Oversample
+     *
+     * Oversample images to at least this DPI (0 = no oversampling)
      */
     oversample?: number;
     /**
      * Rotate Pages
+     *
+     * Rotate pages to correct orientation
      */
     rotate_pages?: boolean;
     /**
      * Remove Vectors
+     *
+     * Remove vector graphics from PDF
      */
     remove_vectors?: boolean;
     /**
      * Advanced Settings
+     *
+     * Additional OCRmyPDF arguments in JSON format
      */
     advanced_settings?: {
         [key: string]: unknown;
-    };
+    } | null;
 };
 
 /**
  * OcrPresetUpdateSchema
  */
 export type OcrPresetUpdateSchema = {
-    /**
-     * Name
-     */
-    name?: string | null;
-    /**
-     * Is Default
-     */
-    is_default?: boolean | null;
-    /**
-     * Force Ocr
-     */
-    force_ocr?: boolean | null;
-    /**
-     * Skip Text
-     */
-    skip_text?: boolean | null;
-    /**
-     * Redo Ocr
-     */
-    redo_ocr?: boolean | null;
-    /**
-     * Ocr Backend
-     */
-    ocr_backend?: string | null;
-    /**
-     * Language
-     */
-    language?: string | null;
-    /**
-     * Optimize
-     */
-    optimize?: number | null;
-    /**
-     * Jpeg Quality
-     */
-    jpeg_quality?: number | null;
-    /**
-     * Png Quality
-     */
-    png_quality?: number | null;
-    /**
-     * Deskew
-     */
-    deskew?: boolean | null;
-    /**
-     * Do Clean
-     */
-    do_clean?: boolean | null;
-    /**
-     * Do Clean Final
-     */
-    do_clean_final?: boolean | null;
-    /**
-     * Remove Background
-     */
-    remove_background?: boolean | null;
-    /**
-     * Oversample
-     */
-    oversample?: number | null;
-    /**
-     * Rotate Pages
-     */
-    rotate_pages?: boolean | null;
-    /**
-     * Remove Vectors
-     */
-    remove_vectors?: boolean | null;
-    /**
-     * Advanced Settings
-     */
-    advanced_settings?: {
-        [key: string]: unknown;
-    } | null;
+    [key: string]: unknown;
 };
 
 /**
@@ -1009,7 +972,7 @@ export type PondsApiListPondsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/ponds/';
+    url: '/api/ponds';
 };
 
 export type PondsApiListPondsResponses = {
@@ -1027,7 +990,7 @@ export type PondsApiCreatePondData = {
     body: PondCreateSchema;
     path?: never;
     query?: never;
-    url: '/api/ponds/';
+    url: '/api/ponds';
 };
 
 export type PondsApiCreatePondResponses = {

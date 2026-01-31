@@ -1,9 +1,10 @@
 <script lang="ts">
-    import {ChevronLeft, ChevronRight, Download, Edit} from "lucide-svelte";
+    import {ChevronLeft, ChevronRight, Download, Edit, Eye} from "lucide-svelte";
 
     let {
         documentQuery,
         currentPageNumber = $bindable(1),
+        showEditor = $bindable(false),
     } = $props();
 
     function nextPage() {
@@ -53,33 +54,7 @@
         </div>
 
         <div class="flex items-center space-x-3">
-            <!-- Search Toggle -->
-            <!--						<DocumentSearchBar-->
-            <!--							bind:searchQuery-->
-            <!--							searchResults={$documentSearchMutation.data || []}-->
-            <!--							isLoading={$documentSearchMutation.isPending}-->
-            <!--							onResultClick={handleSearchResult}-->
-            <!--						/>-->
-
-            <!-- Sidebar Toggle -->
-            <!--            <button-->
-            <!--                    onclick={() => showSidebar = !showSidebar}-->
-            <!--                    class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium"-->
-            <!--                    class:bg-blue-50={showSidebar}-->
-            <!--                    class:border-blue-300={showSidebar}-->
-            <!--                    class:text-blue-700={showSidebar}-->
-            <!--            >-->
-            <!--                Edit OCR-->
-            <!--            </button>-->
-
-            <!-- Actions -->
             <div class="flex items-center space-x-2">
-                <div class="flex items-center space-x-2">
-                    <div>Show:</div>
-                    <button>Markdown</button>
-                    <button>PDF</button>
-                    <button>RawOCR</button>
-                </div>
 
                 {#if $documentQuery.data.original_pdf}
                     <button
@@ -92,11 +67,18 @@
                 {/if}
 
                 <button
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        title="Edit document"
+                        onclick={() => showEditor = !showEditor}
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2 text-sm font-medium"
                 >
-                    <Edit class="h-5 w-5 text-gray-600"/>
+                    {#if showEditor}
+                        <Eye class="h-4 w-4"/>
+                        <span>View Mode</span>
+                    {:else}
+                        <Edit class="h-4 w-4"/>
+                        <span>Edit Docling Data</span>
+                    {/if}
                 </button>
+
             </div>
         </div>
     </div>

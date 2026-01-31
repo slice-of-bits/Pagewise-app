@@ -227,7 +227,7 @@
 
 <svelte:window onkeydown={handleKeydown}/>
 
-<div class="fixed inset-0 bg-white z-50 flex flex-col">
+<div class="flex flex-col">
     <!-- Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
         <div class="flex items-center space-x-4">

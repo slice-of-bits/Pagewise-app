@@ -11,6 +11,7 @@
 
 	let showSidebar = $state(false);
 	let currentPageNumber = $state(1);
+	let showEditor = $state(false);
 	let hasInitialized = $state(false);
 	let lastDocumentSqid = $state('');
 
@@ -82,11 +83,12 @@
 		<!-- Main Content -->
 		<div class="flex-1 flex flex-col">
 			<!-- Header -->
-            <DocumentNavBar {documentQuery} bind:currentPageNumber />
+            <DocumentNavBar {documentQuery} bind:currentPageNumber bind:showEditor />
 			<!-- Page Navigation -->
 			{#if $documentQuery.data && ($documentQuery.data?.page_count || 0) > 1}
                 <PageDetails
 					bind:pageSqid={currentPageSqid}
+					bind:showEditor
 					documentSqid={params.sqid}
 					currentPageNumber={currentPageNumber}
 					totalPages={$documentQuery.data.page_count || 0}

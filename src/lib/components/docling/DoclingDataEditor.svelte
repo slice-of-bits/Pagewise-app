@@ -19,26 +19,41 @@
 		blocks: DoclingBlock[];
 		selectedBlockIndex?: number | null;
 		blockTypes: string[];
+		isAddingBlock?: boolean;
 		onBlocksChange: (blocks: DoclingBlock[]) => void;
 		onBlockSelect?: (index: number) => void;
+		onAddBlock?: () => void;
 	}
 
 	let {
 		blocks = $bindable([]),
 		selectedBlockIndex = $bindable(null),
 		blockTypes = [],
+		isAddingBlock = false,
 		onBlocksChange,
-		onBlockSelect
+		onBlockSelect,
+		onAddBlock
 	}: Props = $props();
 
 	let expandedBlocks = $state<Set<number>>(new Set());
 
-	function updateBlock(index: number, updates: Partial<DoclingBlock>) {
-		const newBlocks = [...blocks];
-		newBlocks[index] = { ...newBlocks[index], ...updates };
-		blocks = newBlocks;
-		onBlocksChange(newBlocks);
-	}
+	// Auto-expand and scroll to selected block when it changes
+	$effect(() => {
+		if (selectedBlockIndex !== null) {
+			// Auto-expand selected block
+			const newSet = new Set(expandedBlocks);
+			newSet.add(selectedBlockIndex);
+			expandedBlocks = newSet;
+
+			// Scroll to selected block
+			setTimeout(() => {
+				const element = document.getElementById(`block-${selectedBlockIndex}`);
+				if (element) {
+					element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+				}
+			}, 50);
+		}
+	});
 
 	function updateBBox(index: number, key: keyof BBox, value: number) {
 		const newBlocks = [...blocks];
@@ -58,19 +73,6 @@
 		} else if (selectedBlockIndex !== null && selectedBlockIndex > index) {
 			selectedBlockIndex--;
 		}
-		onBlocksChange(newBlocks);
-	}
-
-	function addBlock() {
-		const newBlock: DoclingBlock = {
-			type: 'text',
-			text: '',
-			bbox: { l: 0, t: 0, r: 100, b: 100 }
-		};
-		const newBlocks = [...blocks, newBlock];
-		blocks = newBlocks;
-		selectedBlockIndex = newBlocks.length - 1;
-		expandedBlocks.add(newBlocks.length - 1);
 		onBlocksChange(newBlocks);
 	}
 
@@ -117,17 +119,23 @@
 	<div class="flex items-center justify-between p-4 border-b border-gray-200">
 		<h3 class="text-lg font-medium text-gray-900">Content Blocks</h3>
 		<button
-			onclick={addBlock}
-			class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 flex items-center space-x-1"
+			onclick={onAddBlock}
+			class="px-3 py-1.5 text-white text-sm rounded-md flex items-center space-x-1"
+			class:bg-blue-600={!isAddingBlock}
+			class:hover:bg-blue-700={!isAddingBlock}
+			class:bg-green-600={isAddingBlock}
+			class:animate-pulse={isAddingBlock}
+			title={isAddingBlock ? 'Draw a box on the canvas' : 'Add a new block'}
 		>
 			<Plus class="h-4 w-4" />
-			<span>Add Block</span>
+			<span>{isAddingBlock ? 'Drawing...' : 'Add Block'}</span>
 		</button>
 	</div>
 
 	<div class="flex-1 overflow-y-auto p-4 space-y-3">
 		{#each blocks as block, index (index)}
 			<div
+				id="block-{index}"
 				class="border rounded-lg transition-all {selectedBlockIndex === index
 					? 'border-blue-500 shadow-md'
 					: 'border-gray-200 hover:border-gray-300'}"
@@ -219,12 +227,11 @@
 							<label for="block-type-{index}" class="block text-xs font-medium text-gray-700 mb-1">Block Type</label>
 							<select
 								id="block-type-{index}"
-								value={block.type}
-								onchange={(e) => updateBlock(index, { type: e.currentTarget.value })}
+								bind:value={block.type}
 								class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							>
-								{#each blockTypes as type}
-									<option value={type}>{type}</option>
+								{#each blockTypes as blockType}
+									<option value={blockType}>{blockType}</option>
 								{/each}
 							</select>
 						</div>
@@ -234,8 +241,7 @@
 							<label for="block-text-{index}" class="block text-xs font-medium text-gray-700 mb-1">Content</label>
 							<textarea
 								id="block-text-{index}"
-								value={block.text || ''}
-								oninput={(e) => updateBlock(index, { text: e.currentTarget.value })}
+								bind:value={block.text}
 								rows="3"
 								class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
 								placeholder="Block content..."

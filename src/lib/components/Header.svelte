@@ -13,8 +13,7 @@
 			<!-- Logo and Navigation -->
 			<div class="flex items-center space-x-8">
 				<a href="/" class="flex items-center space-x-2 text-xl font-bold text-gray-900">
-					<FileText class="h-6 w-6 text-blue-600" />
-					<span>Pagewise</span>
+					<img src="/docpond-small.png" alt="DocPond Logo" class="h-12 w-full" />
 				</a>
 
 				<!-- Desktop Navigation -->

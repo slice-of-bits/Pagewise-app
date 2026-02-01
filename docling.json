@@ -1,0 +1,324 @@
+{
+  "body": {
+    "name": "_root_",
+    "label": "unspecified",
+    "children": [
+      {
+        "$ref": "#/texts/0"
+      },
+      {
+        "$ref": "#/texts/1"
+      },
+      {
+        "$ref": "#/groups/0"
+      },
+      {
+        "$ref": "#/pictures/0"
+      },
+      {
+        "$ref": "#/pictures/1"
+      },
+      {
+        "$ref": "#/pictures/2"
+      },
+      {
+        "$ref": "#/texts/6"
+      }
+    ],
+    "self_ref": "#/body",
+    "content_layer": "body"
+  },
+  "name": "tmprhcafttq",
+  "pages": {
+    "1": {
+      "size": {
+        "width": 490.3900146484375,
+        "height": 674.6500244140625
+      },
+      "page_no": 1
+    }
+  },
+  "texts": [
+    {
+      "orig": "BASISHANDBOEK",
+      "prov": [
+        {
+          "bbox": {
+            "b": 614.8005625406901,
+            "l": 96.36411539713542,
+            "r": 385.7969970703125,
+            "t": 634.523681640625,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            13
+          ]
+        }
+      ],
+      "text": "BASISHANDBOEK",
+      "label": "section_header",
+      "level": 1,
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "self_ref": "#/texts/0",
+      "content_layer": "body"
+    },
+    {
+      "orig": "ZEILEN",
+      "prov": [
+        {
+          "bbox": {
+            "b": 469.93766276041663,
+            "l": 21.45208231608073,
+            "r": 454.2393391927083,
+            "t": 607.3193817138672,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            6
+          ]
+        }
+      ],
+      "text": "ZEILEN",
+      "label": "section_header",
+      "level": 1,
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "self_ref": "#/texts/1",
+      "content_layer": "body"
+    },
+    {
+      "orig": "BOUW VAN DE ZEILBOOT EN DE UITRUSTING",
+      "prov": [
+        {
+          "bbox": {
+            "b": 447.154052734375,
+            "l": 56.5245361328125,
+            "r": 306.79884847005206,
+            "t": 457.69571940104163,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            37
+          ]
+        }
+      ],
+      "text": "BOUW VAN DE ZEILBOOT EN DE UITRUSTING",
+      "label": "list_item",
+      "marker": "",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "self_ref": "#/texts/2",
+      "enumerated": false,
+      "content_layer": "body"
+    },
+    {
+      "orig": "DE BELANGRIJKSTE MANOEUVRES EN ZEILTECHNIEKEN",
+      "prov": [
+        {
+          "bbox": {
+            "b": 422.33013916015625,
+            "l": 55.84351603190104,
+            "r": 359.2372639973958,
+            "t": 434.9121297200521,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            45
+          ]
+        }
+      ],
+      "text": "DE BELANGRIJKSTE MANOEUVRES EN ZEILTECHNIEKEN",
+      "label": "list_item",
+      "marker": "",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "self_ref": "#/texts/3",
+      "enumerated": false,
+      "content_layer": "body"
+    },
+    {
+      "orig": "VOORSCHRIFTEN EN PROCEDURES",
+      "prov": [
+        {
+          "bbox": {
+            "b": 398.86643473307294,
+            "l": 55.503011067708336,
+            "r": 250.2743123372396,
+            "t": 409.40810139973956,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            27
+          ]
+        }
+      ],
+      "text": "VOORSCHRIFTEN EN PROCEDURES",
+      "label": "list_item",
+      "marker": "",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "self_ref": "#/texts/4",
+      "enumerated": false,
+      "content_layer": "body"
+    },
+    {
+      "orig": "TECHNIEKEN AAN BOORD",
+      "prov": [
+        {
+          "bbox": {
+            "b": 373.70245361328125,
+            "l": 56.18402608235677,
+            "r": 202.6030069986979,
+            "t": 385.2642822265625,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            20
+          ]
+        }
+      ],
+      "text": "TECHNIEKEN AAN BOORD",
+      "label": "list_item",
+      "marker": "",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "self_ref": "#/texts/5",
+      "enumerated": false,
+      "content_layer": "body"
+    },
+    {
+      "orig": "THOMASSCHWARZMEIER",
+      "prov": [
+        {
+          "bbox": {
+            "b": 25.82747395833337,
+            "l": 293.51898193359375,
+            "r": 421.5504557291667,
+            "t": 36.029052734375,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            18
+          ]
+        }
+      ],
+      "text": "THOMASSCHWARZMEIER",
+      "label": "page_footer",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "self_ref": "#/texts/6",
+      "content_layer": "furniture"
+    }
+  ],
+  "groups": [
+    {
+      "name": "list",
+      "label": "list",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/2"
+        },
+        {
+          "$ref": "#/texts/3"
+        },
+        {
+          "$ref": "#/texts/4"
+        },
+        {
+          "$ref": "#/texts/5"
+        }
+      ],
+      "self_ref": "#/groups/0",
+      "content_layer": "body"
+    }
+  ],
+  "origin": {
+    "filename": "tmprhcafttq.pdf",
+    "mimetype": "application/pdf",
+    "binary_hash": 9745800501577255000
+  },
+  "tables": [],
+  "version": "1.9.0",
+  "pictures": [
+    {
+      "prov": [
+        {
+          "bbox": {
+            "b": 57.75372314453125,
+            "l": 112.05437469482422,
+            "r": 202.72837829589844,
+            "t": 150.2738037109375,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "page_no": 1,
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "image": {
+        "dpi": 72,
+        "uri": "",
+        "size": {
+          "width": 92,
+          "height": 92
+        },
+        "mimetype": "image/png"
+      },
+      "label": "picture",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "captions": [],
+      "children": [],
+      "self_ref": "#/pictures/2",
+      "footnotes": [],
+      "references": [],
+      "annotations": [],
+      "content_layer": "body"
+    }
+  ],
+  "furniture": {
+    "name": "_root_",
+    "label": "unspecified",
+    "children": [],
+    "self_ref": "#/furniture",
+    "content_layer": "furniture"
+  },
+  "form_items": [],
+  "schema_name": "DoclingDocument",
+  "key_value_items": []
+}

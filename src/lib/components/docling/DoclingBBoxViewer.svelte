@@ -8,31 +8,44 @@
 		b: number; // bottom
 	}
 
-	interface DoclingBlock {
-		type: string;
-		text?: string;
-		bbox?: BBox;
-		[key: string]: any;
-	}
-
 	let {
 		page,
 		blocks,
 		selectedBlockIndex = $bindable(null),
 		showLabels = $bindable(true),
-		onBlockClick = undefined
+		isAddingBlock = $bindable(false),
+		updateTrigger = 0,
+		onBlockClick = undefined,
+		onBBoxDrawn = undefined,
+		onBBoxUpdate = undefined
 	}: {
 		page: any;
 		blocks: any[];
 		selectedBlockIndex?: number | null;
 		showLabels?: boolean;
+		isAddingBlock?: boolean;
+		updateTrigger?: number;
 		onBlockClick?: (index: number) => void;
+		onBBoxDrawn?: (bbox: BBox) => void;
+		onBBoxUpdate?: (index: number, bbox: BBox) => void;
 	} = $props();
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null = null;
 	let image: HTMLImageElement | null = null;
 	let scale = 1;
+
+	// Drawing state
+	let isDrawing = $state(false);
+	let drawStartX = $state(0);
+	let drawStartY = $state(0);
+	let drawCurrentX = $state(0);
+	let drawCurrentY = $state(0);
+
+	// Dragging state
+	let isDragging = $state(false);
+	let draggedCorner = $state<string | null>(null);
+	let draggedBlockIndex = $state<number | null>(null);
 
 	// Color scheme for different block types
 	const colorMap: Record<string, string> = {
@@ -66,56 +79,35 @@
 		}
 
 		// Get the Docling page dimensions
-		// The bbox coordinates are in Docling page units, not pixels
 		let doclingPageWidth = canvas.width;
 		let doclingPageHeight = canvas.height;
 
 		// Try to get exact page dimensions from the page prop
-		// Docling stores page size in the pages object
 		if (page?.docling_json?.pages) {
 			const pageData = Object.values(page.docling_json.pages)[0] as any;
 			if (pageData?.size) {
 				doclingPageWidth = pageData.size.width;
 				doclingPageHeight = pageData.size.height;
-				console.log('DoclingBBoxViewer: Got page size from docling_json', {
-					width: doclingPageWidth,
-					height: doclingPageHeight
-				});
 			}
 		}
 
 		// If we still don't have page dimensions, calculate from bbox data
-		// Use ALL bbox coordinates (including top/bottom, left/right) to find actual page bounds
 		if (doclingPageWidth === canvas.width && blocks.length > 0) {
 			let maxBboxR = 0;
-			let maxBboxT = 0; // For BOTTOMLEFT origin, T is at top (higher value)
+			let maxBboxT = 0;
 
 			blocks.forEach((block: any) => {
 				if (block.bbox) {
 					maxBboxR = Math.max(maxBboxR, block.bbox.r);
-					maxBboxT = Math.max(maxBboxT, block.bbox.t); // Top edge in BOTTOMLEFT
+					maxBboxT = Math.max(maxBboxT, block.bbox.t);
 				}
 			});
 
-			// Add some padding (10%) to account for margins
 			if (maxBboxR > 0 && maxBboxT > 0) {
 				doclingPageWidth = maxBboxR * 1.1;
 				doclingPageHeight = maxBboxT * 1.1;
-				console.log('DoclingBBoxViewer: Calculated page size from bbox data with 10% padding', {
-					maxRight: maxBboxR,
-					maxTop: maxBboxT,
-					pageWidth: doclingPageWidth,
-					pageHeight: doclingPageHeight
-				});
 			}
 		}
-
-		console.log('DoclingBBoxViewer: Drawing bboxes', {
-			imageSize: { width: image.width, height: image.height },
-			canvasSize: { width: canvas.width, height: canvas.height },
-			blocksCount: blocks.length,
-			doclingPageSize: { width: doclingPageWidth, height: doclingPageHeight }
-		});
 
 		// Clear canvas
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -127,96 +119,201 @@
 		const scaleX = canvas.width / doclingPageWidth;
 		const scaleY = canvas.height / doclingPageHeight;
 
-		console.log('DoclingBBoxViewer: Coordinate scaling', {
-			doclingPageSize: { width: doclingPageWidth, height: doclingPageHeight },
-			canvasSize: { width: canvas.width, height: canvas.height },
-			scale: { x: scaleX, y: scaleY }
-		});
-
 		// Draw bounding boxes
 		blocks.forEach((block: any, index: number) => {
 			if (!block.bbox || !ctx) return;
 
 			const bbox = block.bbox;
-
-			// Check if coordinates use BOTTOMLEFT origin (Docling default)
 			const coordOrigin = block.prov?.[0]?.bbox?.coord_origin || 'BOTTOMLEFT';
 			let x, y, width, height;
 
 			if (coordOrigin === 'BOTTOMLEFT') {
-				// Convert from BOTTOMLEFT to TOPLEFT and scale to canvas pixels
 				x = bbox.l * scaleX;
-				y = canvas.height - (bbox.b * scaleY); // Flip Y coordinate
+				y = canvas.height - (bbox.b * scaleY);
 				width = (bbox.r - bbox.l) * scaleX;
 				height = (bbox.b - bbox.t) * scaleY;
 			} else {
-				// TOPLEFT origin - just scale
 				x = bbox.l * scaleX;
 				y = bbox.t * scaleY;
 				width = (bbox.r - bbox.l) * scaleX;
 				height = (bbox.b - bbox.t) * scaleY;
 			}
 
-			if (index < 3) { // Only log first 3 blocks to avoid console spam
-				console.log(`Block ${index} (${block.type}):`, {
-					bbox: bbox,
-					coordOrigin: coordOrigin,
-					canvasCoords: { x, y, width, height },
-					scales: { x: scaleX, y: scaleY }
-				});
-			}
-
 			const color = getBlockColor(block.type);
 			const isSelected = index === selectedBlockIndex;
 
-			// Draw rectangle
+			// Draw rectangle with better visibility for selected
 			ctx.strokeStyle = color;
-			ctx.lineWidth = isSelected ? 3 : 2;
-			ctx.globalAlpha = 0.8;
+			ctx.lineWidth = isSelected ? 4 : 2;
+			ctx.globalAlpha = 1;
 			ctx.strokeRect(x, y, width, height);
 
-			// Fill with semi-transparent color
+			// Fill with semi-transparent color - more visible when selected
 			ctx.fillStyle = color;
-			ctx.globalAlpha = isSelected ? 0.3 : 0.15;
+			ctx.globalAlpha = isSelected ? 0.3 : 0.1;
 			ctx.fillRect(x, y, width, height);
 
-			// Draw label if enabled
-			if (showLabels) {
+			// Add a second highlight border for selected blocks
+			if (isSelected) {
+				ctx.strokeStyle = '#3B82F6'; // Blue highlight
+				ctx.lineWidth = 2;
+				ctx.globalAlpha = 0.8;
+				const offset = 3;
+				ctx.strokeRect(x - offset, y - offset, width + offset * 2, height + offset * 2);
+			}
+
+			// Draw corner handles for selected block
+			if (isSelected) {
 				ctx.globalAlpha = 1;
 				ctx.fillStyle = color;
+				const handleSize = 8;
+				// Top-left
+				ctx.fillRect(x - handleSize/2, y - handleSize/2, handleSize, handleSize);
+				// Top-right
+				ctx.fillRect(x + width - handleSize/2, y - handleSize/2, handleSize, handleSize);
+				// Bottom-left
+				ctx.fillRect(x - handleSize/2, y + height - handleSize/2, handleSize, handleSize);
+				// Bottom-right
+				ctx.fillRect(x + width - handleSize/2, y + height - handleSize/2, handleSize, handleSize);
+			}
+
+			// Draw label OUTSIDE the box (above it) if enabled
+			if (showLabels) {
+				ctx.globalAlpha = 1;
 				const labelText = `${block.type} #${index}`;
 				const padding = 4;
 				const fontSize = 12;
 				ctx.font = `${fontSize}px sans-serif`;
 				const textWidth = ctx.measureText(labelText).width;
 
+				const labelHeight = fontSize + padding * 2;
+
+				// Position label ABOVE the box with clearance
+				const labelX = x;
+				const labelY = y - labelHeight - 2; // 2px gap from box
+
 				// Label background
-				ctx.fillRect(x, y - fontSize - padding * 2, textWidth + padding * 2, fontSize + padding * 2);
+				ctx.fillStyle = color;
+				ctx.fillRect(labelX, labelY, textWidth + padding * 2, labelHeight);
 
 				// Label text
 				ctx.fillStyle = 'white';
-				ctx.fillText(labelText, x + padding, y - padding);
+				ctx.fillText(labelText, labelX + padding, labelY + fontSize + padding / 2);
 			}
 		});
 
+		// Draw the box being drawn
+		if (isDrawing && isAddingBlock) {
+			ctx.globalAlpha = 1;
+			ctx.strokeStyle = '#3B82F6';
+			ctx.lineWidth = 2;
+			ctx.setLineDash([5, 5]);
+			const drawX = Math.min(drawStartX, drawCurrentX);
+			const drawY = Math.min(drawStartY, drawCurrentY);
+			const drawWidth = Math.abs(drawCurrentX - drawStartX);
+			const drawHeight = Math.abs(drawCurrentY - drawStartY);
+			ctx.strokeRect(drawX, drawY, drawWidth, drawHeight);
+			ctx.setLineDash([]);
+		}
+
 		ctx.globalAlpha = 1;
-		console.log('DoclingBBoxViewer: Drawing complete');
 	}
 
-	function handleCanvasClick(event: MouseEvent) {
-		if (!canvas || !image) return;
-
+	function getCanvasCoordinates(event: MouseEvent): {x: number, y: number} {
+		if (!canvas) return {x: 0, y: 0};
 		const rect = canvas.getBoundingClientRect();
-		const x = (event.clientX - rect.left) / scale;
-		const y = (event.clientY - rect.top) / scale;
+		return {
+			x: event.clientX - rect.left,
+			y: event.clientY - rect.top
+		};
+	}
 
-		// Find clicked block (reverse order to prioritize top blocks)
+	function canvasToDocling(canvasX: number, canvasY: number): {x: number, y: number} {
+		if (!canvas || !page?.docling_json?.pages) return {x: canvasX, y: canvasY};
+
+		const pageData = Object.values(page.docling_json.pages)[0] as any;
+		const doclingPageWidth = pageData?.size?.width || canvas.width;
+		const doclingPageHeight = pageData?.size?.height || canvas.height;
+
+		const scaleX = canvas.width / doclingPageWidth;
+		const scaleY = canvas.height / doclingPageHeight;
+
+		// Convert to Docling coordinates (BOTTOMLEFT origin)
+		return {
+			x: canvasX / scaleX,
+			y: (canvas.height - canvasY) / scaleY
+		};
+	}
+
+	function getCornerAtPosition(canvasX: number, canvasY: number, blockIndex: number): string | null {
+		const block = blocks[blockIndex];
+		if (!block?.bbox || !canvas || !page?.docling_json?.pages) return null;
+
+		const pageData = Object.values(page.docling_json.pages)[0] as any;
+		const doclingPageWidth = pageData?.size?.width || canvas.width;
+		const doclingPageHeight = pageData?.size?.height || canvas.height;
+		const scaleX = canvas.width / doclingPageWidth;
+		const scaleY = canvas.height / doclingPageHeight;
+
+		const bbox = block.bbox;
+		const x = bbox.l * scaleX;
+		const y = canvas.height - (bbox.b * scaleY);
+		const width = (bbox.r - bbox.l) * scaleX;
+		const height = (bbox.b - bbox.t) * scaleY;
+
+		const handleSize = 12;
+
+		// Check each corner
+		if (Math.abs(canvasX - x) < handleSize && Math.abs(canvasY - y) < handleSize) return 'tl';
+		if (Math.abs(canvasX - (x + width)) < handleSize && Math.abs(canvasY - y) < handleSize) return 'tr';
+		if (Math.abs(canvasX - x) < handleSize && Math.abs(canvasY - (y + height)) < handleSize) return 'bl';
+		if (Math.abs(canvasX - (x + width)) < handleSize && Math.abs(canvasY - (y + height)) < handleSize) return 'br';
+
+		return null;
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		const {x, y} = getCanvasCoordinates(event);
+
+		// Check if we're in adding mode
+		if (isAddingBlock) {
+			isDrawing = true;
+			drawStartX = x;
+			drawStartY = y;
+			drawCurrentX = x;
+			drawCurrentY = y;
+			return;
+		}
+
+		// Check if clicking on a corner of selected block
+		if (selectedBlockIndex !== null) {
+			const corner = getCornerAtPosition(x, y, selectedBlockIndex);
+			if (corner) {
+				isDragging = true;
+				draggedCorner = corner;
+				draggedBlockIndex = selectedBlockIndex;
+				return;
+			}
+		}
+
+		// Check if clicking on a block
+		const pageData = page?.docling_json?.pages ? Object.values(page.docling_json.pages)[0] as any : null;
+		const doclingPageWidth = pageData?.size?.width || canvas.width;
+		const doclingPageHeight = pageData?.size?.height || canvas.height;
+		const scaleX = canvas.width / doclingPageWidth;
+		const scaleY = canvas.height / doclingPageHeight;
+
 		for (let i = blocks.length - 1; i >= 0; i--) {
 			const block = blocks[i];
 			if (!block.bbox) continue;
 
 			const bbox = block.bbox;
-			if (x >= bbox.l && x <= bbox.r && y >= bbox.t && y <= bbox.b) {
+			const bx = bbox.l * scaleX;
+			const by = canvas.height - (bbox.b * scaleY);
+			const bwidth = (bbox.r - bbox.l) * scaleX;
+			const bheight = (bbox.b - bbox.t) * scaleY;
+
+			if (x >= bx && x <= bx + bwidth && y >= by && y <= by + bheight) {
 				selectedBlockIndex = i;
 				if (onBlockClick) onBlockClick(i);
 				drawBBoxes();
@@ -227,6 +324,91 @@
 		// Click outside any block - deselect
 		selectedBlockIndex = null;
 		drawBBoxes();
+	}
+
+	function handleMouseMove(event: MouseEvent) {
+		const {x, y} = getCanvasCoordinates(event);
+
+		// Update cursor based on position
+		if (!canvas) return;
+
+		if (isDrawing && isAddingBlock) {
+			drawCurrentX = x;
+			drawCurrentY = y;
+			drawBBoxes();
+			return;
+		}
+
+		if (isDragging && draggedBlockIndex !== null && draggedCorner && onBBoxUpdate) {
+			const docling = canvasToDocling(x, y);
+			const block = blocks[draggedBlockIndex];
+			if (!block?.bbox) return;
+
+			const newBBox = {...block.bbox};
+
+			// Update the appropriate corners based on which corner is being dragged
+			switch (draggedCorner) {
+				case 'tl':
+					newBBox.l = docling.x;
+					newBBox.t = docling.y;
+					break;
+				case 'tr':
+					newBBox.r = docling.x;
+					newBBox.t = docling.y;
+					break;
+				case 'bl':
+					newBBox.l = docling.x;
+					newBBox.b = docling.y;
+					break;
+				case 'br':
+					newBBox.r = docling.x;
+					newBBox.b = docling.y;
+					break;
+			}
+
+			// Ensure l < r and b < t (BOTTOMLEFT origin)
+			if (newBBox.l > newBBox.r) [newBBox.l, newBBox.r] = [newBBox.r, newBBox.l];
+			if (newBBox.b > newBBox.t) [newBBox.b, newBBox.t] = [newBBox.t, newBBox.b];
+
+			onBBoxUpdate(draggedBlockIndex, newBBox);
+			drawBBoxes();
+			return;
+		}
+
+		// Update cursor for corner hovering
+		if (selectedBlockIndex !== null) {
+			const corner = getCornerAtPosition(x, y, selectedBlockIndex);
+			canvas.style.cursor = corner ? 'nwse-resize' : (isAddingBlock ? 'crosshair' : 'pointer');
+		} else {
+			canvas.style.cursor = isAddingBlock ? 'crosshair' : 'pointer';
+		}
+	}
+
+	function handleMouseUp(event: MouseEvent) {
+		if (isDrawing && isAddingBlock && onBBoxDrawn) {
+			const {x, y} = getCanvasCoordinates(event);
+
+			// Get Docling coordinates for the drawn rectangle
+			const start = canvasToDocling(Math.min(drawStartX, x), Math.min(drawStartY, y));
+			const end = canvasToDocling(Math.max(drawStartX, x), Math.max(drawStartY, y));
+
+			// In BOTTOMLEFT origin: l < r, b < t
+			const bbox: BBox = {
+				l: start.x,
+				r: end.x,
+				b: start.y,  // bottom is lower Y in BOTTOMLEFT
+				t: end.y     // top is higher Y in BOTTOMLEFT
+			};
+
+			onBBoxDrawn(bbox);
+			isDrawing = false;
+		}
+
+		if (isDragging) {
+			isDragging = false;
+			draggedCorner = null;
+			draggedBlockIndex = null;
+		}
 	}
 
 	function loadImage() {
@@ -301,8 +483,16 @@
 	});
 
 	$effect(() => {
-		// Redraw when blocks, selectedBlockIndex, or showLabels change
+		// Redraw when any aspect of the visualization changes
 		if (image && canvas && ctx) {
+			// Trigger on these changes
+			blocks;
+			selectedBlockIndex;
+			showLabels;
+			isDrawing;
+			drawCurrentX;
+			drawCurrentY;
+			updateTrigger; // Force update when this changes
 			drawBBoxes();
 		}
 	});
@@ -311,8 +501,11 @@
 <div class="relative w-full h-full bg-gray-100 overflow-auto">
 	<canvas
 		bind:this={canvas}
-		onclick={handleCanvasClick}
+		onmousedown={handleMouseDown}
+		onmousemove={handleMouseMove}
+		onmouseup={handleMouseUp}
 		class="cursor-pointer max-w-full"
+		style="cursor: {isAddingBlock ? 'crosshair' : 'pointer'}"
 	></canvas>
 </div>
 

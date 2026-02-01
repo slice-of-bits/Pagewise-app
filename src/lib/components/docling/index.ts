@@ -1,8 +1,8 @@
 /**
- * Docling Editor Components
+ * DocPond Editor Components
  *
  * A comprehensive suite of components for visualizing and editing
- * Docling JSON data in the Pagewise application.
+ * DocPond JSON data in the DocPond application.
  *
  * @module docling
  */

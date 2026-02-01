@@ -51,7 +51,7 @@
 </script>
 
 <svelte:head>
-    <title>Documents - Pagewise</title>
+    <title>Documents - DocPond</title>
 </svelte:head>
 
 <div class="space-y-6">

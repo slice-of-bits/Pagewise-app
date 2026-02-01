@@ -60,7 +60,7 @@
 </script>
 
 <svelte:head>
-	<title>System Settings - Pagewise</title>
+	<title>System Settings - DocPond</title>
 </svelte:head>
 
 <div class="max-w-4xl mx-auto space-y-8">
@@ -220,7 +220,7 @@
 						<div>
 							<p class="font-medium text-gray-900 mb-1">DeepSeek OCR</p>
 							<p class="text-gray-600">
-								Pagewise uses DeepSeek's OCR capabilities to extract text from PDF pages with high accuracy.
+								DocPond uses DeepSeek's OCR capabilities to extract text from PDF pages with high accuracy.
 							</p>
 						</div>
 

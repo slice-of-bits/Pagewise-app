@@ -85,7 +85,7 @@
 </script>
 
 <svelte:head>
-	<title>OCRmyPDF Presets - Pagewise</title>
+	<title>OCRmyPDF Presets - DocPond</title>
 </svelte:head>
 
 <div class="max-w-6xl mx-auto space-y-8">

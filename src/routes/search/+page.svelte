@@ -57,7 +57,7 @@
 </script>
 
 <svelte:head>
-    <title>Search Results - Pagewise</title>
+    <title>Search Results - DocPond</title>
 </svelte:head>
 
 <div class="space-y-6">

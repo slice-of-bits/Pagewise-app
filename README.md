@@ -1,4 +1,4 @@
-# Pagewise Frontend Application
+# DocPond Frontend Application
 
 This is the frontend application for the Pagewise document management system built with SvelteKit.
 

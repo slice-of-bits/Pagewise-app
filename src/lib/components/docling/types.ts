@@ -2,7 +2,7 @@
  * Type definitions for Docling Editor components
  *
  * This file provides TypeScript interfaces for working with Docling data
- * in the Pagewise application.
+ * in the DocPond application.
  */
 
 /**

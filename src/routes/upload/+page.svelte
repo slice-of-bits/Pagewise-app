@@ -238,7 +238,7 @@
 </script>
 
 <svelte:head>
-	<title>Upload Document - Pagewise</title>
+	<title>Upload Document - DocPond</title>
 </svelte:head>
 
 <div class="max-w-4xl mx-auto space-y-8">

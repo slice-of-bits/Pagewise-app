@@ -100,7 +100,7 @@
 </script>
 
 <svelte:head>
-	<title>Docling Presets - Pagewise</title>
+	<title>Docling Presets - DocPond</title>
 </svelte:head>
 
 <div class="max-w-6xl mx-auto space-y-8">

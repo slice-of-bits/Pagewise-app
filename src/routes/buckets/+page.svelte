@@ -63,7 +63,7 @@
 </script>
 
 <svelte:head>
-	<title>Groups - Pagewise</title>
+	<title>Groups - DocPond</title>
 </svelte:head>
 
 <div class="space-y-6">

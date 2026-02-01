@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {createQuery, createMutation, useQueryClient} from '@tanstack/svelte-query';
-    import {documentsApiGetPageOptions, documentsApiUpdatePageMutation} from '$lib/api/@tanstack/svelte-query.gen';
+    import {createMutation, useQueryClient} from '@tanstack/svelte-query';
+    import {documentsApiUpdatePageMutation} from '$lib/api/@tanstack/svelte-query.gen';
     import DoclingBBoxViewer from './DoclingBBoxViewer.svelte';
     import DoclingDataEditor from './DoclingDataEditor.svelte';
     import DoclingColorLegend from './DoclingColorLegend.svelte';
@@ -8,6 +8,7 @@
     import {beforeNavigate} from '$app/navigation';
     import {DoclingStateManager, type SimplifiedBlock} from './DoclingStateManager';
     import type {PageDetailsSchema} from '$lib/api/types.gen';
+    import {onMount} from 'svelte';
 
     interface BBox {
         l: number;
@@ -36,13 +37,15 @@
     let isSaving = $state(false);
     let saveError = $state<string | null>(null);
     let saveSuccess = $state(false);
+    let isAddingBlock = $state(false);
 
     // State manager instance
     let stateManager: DoclingStateManager | null = $state(null);
     let simplifiedBlocks = $state<SimplifiedBlock[]>([]);
     let bboxBlocks = $state<DoclingBlock[]>([]);
     let blocksModified = $state(false);
-    let isInitializing = $state(false); // Flag to prevent infinite loop
+    let initializedPageSqid = $state<string | null>(null);
+    let blocksUpdateTrigger = $state(0); // Force reactivity trigger
 
     const queryClient = useQueryClient();
 
@@ -88,66 +91,108 @@
     });
 
     // Initialize state manager when page data loads
+    onMount(() => {
+        initializeEditor();
+    });
+
+    // Re-initialize if page changes
     $effect(() => {
-        if (page && (page.docling_json || page.docling_json_override) && !isInitializing) {
-            isInitializing = true;
-
-            console.log('DoclingPageEditor: Initializing with page data', {
-                sqid: page.sqid,
-                page_number: page.page_number,
-                has_page_image: !!page.page_image,
-                page_image_url: page.page_image,
-                has_docling_json: !!page.docling_json,
-                has_docling_json_override: !!page.docling_json_override,
-                docling_keys: page.docling_json ? Object.keys(page.docling_json) : [],
-                override_keys: page.docling_json_override ? Object.keys(page.docling_json_override) : []
-            });
-
-            try {
-                stateManager = new DoclingStateManager(page);
-                const newSimplifiedBlocks = stateManager.getSimplifiedBlocks();
-
-                console.log('DoclingPageEditor: State manager created', {
-                    simplifiedBlocksCount: newSimplifiedBlocks.length,
-                    stateManagerExists: !!stateManager
-                });
-
-                simplifiedBlocks = newSimplifiedBlocks;
-
-                // Convert simplified blocks to format expected by BBoxViewer/Editor
-                bboxBlocks = newSimplifiedBlocks.map(block => ({
-                    type: block.type,
-                    text: block.text,
-                    bbox: block.bbox || undefined,
-                    ...block.originalData
-                }));
-                blocksModified = false;
-
-                console.log('DoclingPageEditor: Simplified blocks created', {
-                    count: newSimplifiedBlocks.length,
-                    bboxBlocksCount: bboxBlocks.length,
-                    types: [...new Set(newSimplifiedBlocks.map(b => b.type))],
-                    sampleBlock: bboxBlocks[0]
-                });
-            } catch (error) {
-                console.error('DoclingPageEditor: Error initializing state manager', error);
-            } finally {
-                // Reset flag after a tick to allow effect to run again if page changes
-                setTimeout(() => {
-                    isInitializing = false;
-                }, 0);
-            }
+        if (page?.sqid && page.sqid !== initializedPageSqid) {
+            initializeEditor();
         }
     });
 
-    const hasUnsavedChanges = $derived(blocksModified || (stateManager?.hasUnsavedChanges() || false));
+    function initializeEditor() {
+        if (!page || (!page.docling_json && !page.docling_json_override)) {
+            return;
+        }
 
-    function handleBlocksChange(newBlocks: DoclingBlock[]) {
+        // Prevent re-initialization of the same page
+        if (initializedPageSqid === page.sqid) {
+            return;
+        }
+
+        initializedPageSqid = page.sqid;
+
+        console.log('DoclingPageEditor: Initializing with page data', {
+            sqid: page.sqid,
+            page_number: page.page_number,
+            has_page_image: !!page.page_image,
+            page_image_url: page.page_image,
+            has_docling_json: !!page.docling_json,
+            has_docling_json_override: !!page.docling_json_override,
+            docling_keys: page.docling_json ? Object.keys(page.docling_json) : [],
+            override_keys: page.docling_json_override ? Object.keys(page.docling_json_override) : []
+        });
+
+        try {
+            stateManager = new DoclingStateManager(page);
+            const newSimplifiedBlocks = stateManager.getSimplifiedBlocks();
+
+            console.log('DoclingPageEditor: State manager created', {
+                simplifiedBlocksCount: newSimplifiedBlocks.length,
+                stateManagerExists: !!stateManager
+            });
+
+            simplifiedBlocks = newSimplifiedBlocks;
+
+            // Convert simplified blocks to format expected by BBoxViewer/Editor
+            bboxBlocks = newSimplifiedBlocks.map(block => {
+                const {type, text, bbox, ...rest} = block.originalData || {};
+                return {
+                    ...rest,
+                    type: block.type,
+                    text: block.text,
+                    bbox: block.bbox || undefined
+                };
+            });
+            blocksModified = false;
+
+            console.log('DoclingPageEditor: Simplified blocks created', {
+                count: newSimplifiedBlocks.length,
+                bboxBlocksCount: bboxBlocks.length,
+                types: [...new Set(newSimplifiedBlocks.map(b => b.type))],
+                sampleBlock: bboxBlocks[0]
+            });
+        } catch (error) {
+            console.error('DoclingPageEditor: Error initializing state manager', error);
+        }
+    }
+
+    const hasUnsavedChanges = $derived(blocksModified || (stateManager && stateManager.hasUnsavedChanges ? stateManager.hasUnsavedChanges() : false));
+
+    function handleBlocksChange() {
         // Mark as modified when blocks change
         blocksModified = true;
+        blocksUpdateTrigger++;
+    }
 
-        // TODO: Sync changes back to state manager
-        // For now, changes are tracked in bboxBlocks and will be saved
+    function handleNewBBox(bbox: BBox) {
+        // Create new block with the drawn bbox
+        const blockType = 'text';
+        const newBlock = {
+            type: blockType,
+            text: '',
+            bbox: bbox
+        };
+        bboxBlocks = [...bboxBlocks, newBlock];
+        selectedBlockIndex = bboxBlocks.length - 1;
+        blocksModified = true;
+        isAddingBlock = false;
+        handleBlocksChange();
+    }
+
+    function handleBBoxUpdate(index: number, bbox: BBox) {
+        // Update bbox for the block at index
+        const newBlocks = [...bboxBlocks];
+        newBlocks[index] = { ...newBlocks[index], bbox };
+        bboxBlocks = newBlocks;
+        blocksModified = true;
+        handleBlocksChange();
+    }
+
+    function startAddingBlock() {
+        isAddingBlock = true;
     }
 
     async function handleSave() {
@@ -159,20 +204,17 @@
         try {
             const doclingData = stateManager.getCurrentDocling();
 
-            // The API expects the docling_json_override in the body
-            // We'll send it as an extended type since PageUpdateSchema might not include it
             await $updatePageMutation.mutateAsync({
                 path: {
                     sqid: page.sqid
                 },
                 body: {
-                    // @ts-ignore - extending PageUpdateSchema with docling_json_override
                     docling_json_override: doclingData
                 } as any
             });
-        } catch (error) {
-            console.error('Save failed:', error);
-            saveError = error instanceof Error ? error.message : 'Failed to save changes';
+        } catch (e: any) {
+            console.error('Save failed:', e);
+            saveError = e?.message || 'Failed to save changes';
         } finally {
             isSaving = false;
         }
@@ -186,12 +228,15 @@
             simplifiedBlocks = stateManager.getSimplifiedBlocks();
 
             // Recreate bboxBlocks from reset simplifiedBlocks
-            bboxBlocks = simplifiedBlocks.map(block => ({
-                type: block.type,
-                text: block.text,
-                bbox: block.bbox || undefined,
-                ...block.originalData
-            }));
+            bboxBlocks = simplifiedBlocks.map(block => {
+                const {type, text, bbox, ...rest} = block.originalData || {};
+                return {
+                    ...rest,
+                    type: block.type,
+                    text: block.text,
+                    bbox: block.bbox || undefined
+                };
+            });
             blocksModified = false;
         }
     }
@@ -238,28 +283,6 @@
         </div>
 
         <div class="flex items-center space-x-3">
-            <!-- Close Button -->
-            {#if onClose}
-                <button
-                        onclick={handleClose}
-                        class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 flex items-center space-x-2"
-                        title="Close editor"
-                >
-                    <X class="h-4 w-4"/>
-                    <span>Close</span>
-                </button>
-            {/if}
-
-            <!-- Reset Button -->
-            <button
-                    onclick={handleReset}
-                    disabled={!hasUnsavedChanges}
-                    class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                    title="Reset to original"
-            >
-                <RotateCcw class="h-4 w-4"/>
-                <span>Reset</span>
-            </button>
 
             <!-- Toggle Labels -->
             <button
@@ -336,6 +359,10 @@
                         blocks={bboxBlocks}
                         bind:selectedBlockIndex
                         bind:showLabels
+                        bind:isAddingBlock
+                        updateTrigger={blocksUpdateTrigger}
+                        onBBoxDrawn={handleNewBBox}
+                        onBBoxUpdate={handleBBoxUpdate}
                 />
             {:else}
                 <div class="flex items-center justify-center h-full bg-gray-50">
@@ -360,8 +387,10 @@
                     bind:blocks={bboxBlocks}
                     bind:selectedBlockIndex
                     {blockTypes}
+                    {isAddingBlock}
                     onBlocksChange={handleBlocksChange}
                     onBlockSelect={(index) => (selectedBlockIndex = index)}
+                    onAddBlock={startAddingBlock}
             />
         </div>
 

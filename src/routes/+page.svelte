@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-    <title>Pagewise - Document Management</title>
+    <title>DocPond - Document Management</title>
     <meta name="description" content="Manage your scanned documents with page-level search capabilities"/>
 </svelte:head>
 
@@ -24,7 +24,7 @@
     <!-- Hero Section -->
     <div class="text-center">
         <h1 class="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-            Welcome to <span class="text-blue-600">Pagewise</span>
+            Welcome to <span class="text-blue-600">DocPond</span>
         </h1>
         <p class="mx-auto mt-3 max-w-md text-base text-gray-500 sm:text-lg md:mt-5 md:max-w-3xl md:text-xl">
             Organize, search, and manage your scanned documents with intelligent page-level search capabilities.

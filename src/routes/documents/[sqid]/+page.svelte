@@ -60,7 +60,7 @@
 </script>
 
 <svelte:head>
-	<title>{$documentQuery.data?.title || 'Document'} - Pagewise</title>
+	<title>{$documentQuery.data?.title || 'Document'} - DocPond</title>
 </svelte:head>
 
 {#if $documentQuery.isLoading}

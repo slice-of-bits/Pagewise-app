@@ -1,5 +1,5 @@
 {
-  "name": "pagewise-app",
+  "name": "docpond-app",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -47,6 +47,7 @@
     "vitest-browser-svelte": "^2.0.1"
   },
   "dependencies": {
+    "@dopry/svelte-oidc": "^1.2.0",
     "@hey-api/openapi-ts": "^0.90.3",
     "@tanstack/svelte-query": "^5.90.2",
     "@types/marked": "^6.0.0",
